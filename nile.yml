@@ -33,10 +33,6 @@ environments:
             AMAZON_SES_PASSWORD: "%{AQECAHhrXauv6cY0k3VFGkUx9UFWdvCyX3a6yFOMm4QCi5o1gwAAAIswgYgGCSqGSIb3DQEHBqB7MHkCAQAwdAYJKoZIhvcNAQcBMB4GCWCGSAFlAwQBLjARBAyXQo9JXGQWktZHlkECARCAR8CcYNEgIh2bPV2u/IRSRj+IWjknUt5kK2jPhcuRzE1mGlcdw0yXu2QmzVYorABWBMsAQi2LGcvdlXMJy7VEzqg1Wje6rtTZ}"
             AMAZON_SES_DOMAIN: "washpost.com"
             EMAIL_FROM_ADDRESS: "klaxon@washpost.com"
-        db:
-          environment:
-            POSTGRES_USER: "root"
-            POSTGRES_DB: "klaxon_development"
     services:
       - deploymentConfiguration:
           maximumPercent: 200
@@ -76,10 +72,6 @@ environments:
             AMAZON_SES_PASSWORD: "%{AQECAHhrXauv6cY0k3VFGkUx9UFWdvCyX3a6yFOMm4QCi5o1gwAAAIswgYgGCSqGSIb3DQEHBqB7MHkCAQAwdAYJKoZIhvcNAQcBMB4GCWCGSAFlAwQBLjARBAyXQo9JXGQWktZHlkECARCAR8CcYNEgIh2bPV2u/IRSRj+IWjknUt5kK2jPhcuRzE1mGlcdw0yXu2QmzVYorABWBMsAQi2LGcvdlXMJy7VEzqg1Wje6rtTZ}"
             AMAZON_SES_DOMAIN: "washpost.com"
             EMAIL_FROM_ADDRESS: "klaxon@washpost.com"
-        db:
-          environment:
-            POSTGRES_USER: "root"
-            POSTGRES_DB: "klaxon_production"
     services:
       - deploymentConfiguration:
           maximumPercent: 200
