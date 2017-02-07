@@ -44,5 +44,7 @@ module Klaxon
         verbose:     true,
         metastore:   'file:./tmp/cache/rack/meta',
         entitystore: 'file:./tmp/cache/rack/body'
+    
+    config.middleware.insert_after "Rails::Rack::Logger", "MiddlewareHealthcheck"
   end
 end
