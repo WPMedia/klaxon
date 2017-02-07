@@ -1,0 +1,21 @@
+version: '2'
+services:
+  db:
+    image: postgres:9.5
+    volumes:
+      - klaxondb:/var/lib/postgresql/data
+    networks:
+      - default
+  app:
+    build: .
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
+    restart: always
+    entrypoint: /usr/src/app/createdb.sh
+    networks:
+      - default
+volumes:
+  klaxondb:
+    driver: local

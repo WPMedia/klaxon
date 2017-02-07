@@ -1,0 +1,82 @@
+name: klaxon
+namespace: siteeng-lincoln
+type: ecs
+environments:
+  - name: staging
+    resources:
+      - vendor: aws
+        resource: simple
+        settings:
+          scheme: internal
+          domain: klaxon-staging.wpit.nile.works
+          parent_domain: wpit.nile.works
+          certificate: arn:aws:iam::766513428554:server-certificate/star.wpit.nile.works_4-3-2018
+    override:
+      services:
+        app:
+          image: quay.io/washpost/klaxon:{{ .Version }}
+          log_driver: awslogs
+          log_opt:
+            awslogs-group: /nile/siteeng-lincoln/klaxon/staging
+            awslogs-region: us-east-1
+          environment:
+            RACK_ENV: development
+            SECRET_KEY_BASE: %{AQECAHhrXauv6cY0k3VFGkUx9UFWdvCyX3a6yFOMm4QCi5o1gwAAAOMwgeAGCSqGSIb3DQEHBqCB0jCBzwIBADCByQYJKoZIhvcNAQcBMB4GCWCGSAFlAwQBLjARBAy5y+wwIl+AElRc+X8CARCAgZtwD92m3zetb+RXINL0UTfv21NKPJ1vfsJ31YCylbx6igxeHxB2Mu9MbPl/4/VRcp/ttUt3seHp5jINI9AqP6/JUaqd7EQaPW4nEmxwCGAPcEZvUoJFPNrTgB5K76Nvi/j1bnPmld4Gl7IXwXQyZ7kLByBjf2zwHdoi4dMz8hwPGL1GfKC4Zt1Z4OAl5ktnUVcPJY0lw8EDSqBrDQ==}
+            ADMIN_EMAILS: %{AQECAHhrXauv6cY0k3VFGkUx9UFWdvCyX3a6yFOMm4QCi5o1gwAAAHUwcwYJKoZIhvcNAQcGoGYwZAIBADBfBgkqhkiG9w0BBwEwHgYJYIZIAWUDBAEuMBEEDMF1I5xC3gpnxhDM1QIBEIAymfGr2irCPeKlAikNoNpYC/J7J4R9XBkweO9AhAXucM3BsRqoKAmY3MJoMp7NwEa+4Eo=}
+            SMTP_PROVIDER: AMAZON_SES
+            AMAZON_SES_ADDRESS: email-smtp.us-east-1.amazonaws.com
+            AMAZON_SES_USERNAME: %{AQECAHhrXauv6cY0k3VFGkUx9UFWdvCyX3a6yFOMm4QCi5o1gwAAAHIwcAYJKoZIhvcNAQcGoGMwYQIBADBcBgkqhkiG9w0BBwEwHgYJYIZIAWUDBAEuMBEEDN/rlZvtX/T6BaDc2QIBEIAvBY2pWKRfW/FkheCqDbEMpX1/FnRbwfqcQSXj8slF4PtVy+f18x1sNmJJo/XINTw=}
+            AMAZON_SES_PASSWORD: %{AQECAHhrXauv6cY0k3VFGkUx9UFWdvCyX3a6yFOMm4QCi5o1gwAAAIswgYgGCSqGSIb3DQEHBqB7MHkCAQAwdAYJKoZIhvcNAQcBMB4GCWCGSAFlAwQBLjARBAyXQo9JXGQWktZHlkECARCAR8CcYNEgIh2bPV2u/IRSRj+IWjknUt5kK2jPhcuRzE1mGlcdw0yXu2QmzVYorABWBMsAQi2LGcvdlXMJy7VEzqg1Wje6rtTZ}
+            AMAZON_SES_DOMAIN: washpost.com
+            EMAIL_FROM_ADDRESS: klaxon@washpost.com
+        db:
+          environment:
+            POSTGRES_USER: root
+            POSTGRES_DB: klaxon_development
+    services:
+      - deploymentConfiguration:
+          maximumPercent: 200
+          minimumHealthyPercent: 50
+        desiredCount: 2
+        loadBalancers:
+        - containerName: app
+          containerPort: 3000
+  - name: production
+    resources:
+      - vendor: aws
+        resource: simple
+        settings:
+          scheme: internal
+          domain: klaxon.wpit.nile.works
+          parent_domain: wpit.nile.works
+          certificate: arn:aws:iam::766513428554:server-certificate/star.wpit.nile.works_4-3-2018
+    override:
+      services:
+        app:
+          image: quay.io/washpost/klaxon:{{ .Version }}
+          log_driver: awslogs
+          log_opt:
+            awslogs-group: /nile/siteeng-lincoln/klaxon/production
+            awslogs-region: us-east-1
+          environment:
+            RACK_ENV: production
+            SECRET_KEY_BASE: %{AQECAHhrXauv6cY0k3VFGkUx9UFWdvCyX3a6yFOMm4QCi5o1gwAAAOMwgeAGCSqGSIb3DQEHBqCB0jCBzwIBADCByQYJKoZIhvcNAQcBMB4GCWCGSAFlAwQBLjARBAy5y+wwIl+AElRc+X8CARCAgZtwD92m3zetb+RXINL0UTfv21NKPJ1vfsJ31YCylbx6igxeHxB2Mu9MbPl/4/VRcp/ttUt3seHp5jINI9AqP6/JUaqd7EQaPW4nEmxwCGAPcEZvUoJFPNrTgB5K76Nvi/j1bnPmld4Gl7IXwXQyZ7kLByBjf2zwHdoi4dMz8hwPGL1GfKC4Zt1Z4OAl5ktnUVcPJY0lw8EDSqBrDQ==}
+            ADMIN_EMAILS: %{AQECAHhrXauv6cY0k3VFGkUx9UFWdvCyX3a6yFOMm4QCi5o1gwAAAHUwcwYJKoZIhvcNAQcGoGYwZAIBADBfBgkqhkiG9w0BBwEwHgYJYIZIAWUDBAEuMBEEDMF1I5xC3gpnxhDM1QIBEIAymfGr2irCPeKlAikNoNpYC/J7J4R9XBkweO9AhAXucM3BsRqoKAmY3MJoMp7NwEa+4Eo=}
+            SMTP_PROVIDER: AMAZON_SES
+            AMAZON_SES_ADDRESS: email-smtp.us-east-1.amazonaws.com
+            AMAZON_SES_USERNAME: %{AQECAHhrXauv6cY0k3VFGkUx9UFWdvCyX3a6yFOMm4QCi5o1gwAAAHIwcAYJKoZIhvcNAQcGoGMwYQIBADBcBgkqhkiG9w0BBwEwHgYJYIZIAWUDBAEuMBEEDN/rlZvtX/T6BaDc2QIBEIAvBY2pWKRfW/FkheCqDbEMpX1/FnRbwfqcQSXj8slF4PtVy+f18x1sNmJJo/XINTw=}
+            AMAZON_SES_PASSWORD: %{AQECAHhrXauv6cY0k3VFGkUx9UFWdvCyX3a6yFOMm4QCi5o1gwAAAIswgYgGCSqGSIb3DQEHBqB7MHkCAQAwdAYJKoZIhvcNAQcBMB4GCWCGSAFlAwQBLjARBAyXQo9JXGQWktZHlkECARCAR8CcYNEgIh2bPV2u/IRSRj+IWjknUt5kK2jPhcuRzE1mGlcdw0yXu2QmzVYorABWBMsAQi2LGcvdlXMJy7VEzqg1Wje6rtTZ}
+            AMAZON_SES_DOMAIN: washpost.com
+            EMAIL_FROM_ADDRESS: klaxon@washpost.com
+        db:
+          environment:
+            POSTGRES_USER: root
+            POSTGRES_DB: klaxon_production
+    services:
+      - deploymentConfiguration:
+          maximumPercent: 200
+          minimumHealthyPercent: 50
+        desiredCount: 2
+        loadBalancers:
+        - containerName: app
+          containerPort: 3000
