@@ -1,5 +1,8 @@
 FROM ruby:2.3.0
 
+LABEL maintainer="Erik Reyna"
+LABEL maintainer_email="erik.reyna@washpost.com"
+
 # throw errors if Gemfile has been modified since Gemfile.lock
 RUN bundle config --global frozen 1
 
@@ -12,8 +15,7 @@ RUN bundle install
 
 COPY . /usr/src/app
 
-ENV RACK_ENV "production"
-ENV RAILS_ENV "production"
+RUN chmod +x createdb.sh
 
 EXPOSE 3000
 CMD ["bundle", "exec", "puma", "-C", "config/puma.rb"]
