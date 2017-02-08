@@ -1,11 +1,5 @@
 version: '2'
 services:
-  # db:
-  #   image: postgres:9.5
-  #   volumes:
-  #     - klaxondb:/var/lib/postgresql/data
-  #   networks:
-  #     - default
   app:
     build: .
     ports:
@@ -13,9 +7,5 @@ services:
     restart: always
     entrypoint: /usr/src/app/createdb.sh
     environment:
-      DATABASE_URL: "%{AQECAHhrXauv6cY0k3VFGkUx9UFWdvCyX3a6yFOMm4QCi5o1gwAAAJowgZcGCSqGSIb3DQEHBqCBiTCBhgIBADCBgAYJKoZIhvcNAQcBMB4GCWCGSAFlAwQBLjARBAxWXxaDcjVhr161yB0CARCAU8dbzxK+ru143KUf3U3tSProms4DGC5mh7ZDZYqGCbt2XWRXzA50OG5aORTuf1dfppVw0coUAgDDBAA1kiVhcJOQlr8caE0Ry4/p3ZhnWBLL3Zy/}"
-      DATABASE_USERNAME: "%{AQECAHhrXauv6cY0k3VFGkUx9UFWdvCyX3a6yFOMm4QCi5o1gwAAAGYwZAYJKoZIhvcNAQcGoFcwVQIBADBQBgkqhkiG9w0BBwEwHgYJYIZIAWUDBAEuMBEEDNAnlMPOqssTsJn26wIBEIAjHwJEVoTiYikBVG65+3n4/AVQHJ1QhzS0xBNbMlJM4L+rAAw=}"
-      DATABASE_PASSWORD: "%{AQECAHhrXauv6cY0k3VFGkUx9UFWdvCyX3a6yFOMm4QCi5o1gwAAAHYwdAYJKoZIhvcNAQcGoGcwZQIBADBgBgkqhkiG9w0BBwEwHgYJYIZIAWUDBAEuMBEEDOjKa+U8NudP5lBNHAIBEIAzdwnem9jFDjkZOBumeqf8rt8CLO8UMehLj8RfZdY9fEIgP/2yjGADbA3Vg5/a3VOunze/}"
-# volumes:
-#   klaxondb:
-#     driver: local
+      DATABASE_URL: "%{AQECAHhrXauv6cY0k3VFGkUx9UFWdvCyX3a6yFOMm4QCi5o1gwAAAM8wgcwGCSqGSIb3DQEHBqCBvjCBuwIBADCBtQYJKoZIhvcNAQcBMB4GCWCGSAFlAwQBLjARBAx7H0nfUYKqum9Z8cACARCAgYeoDI2acpgj9WBYaDlu1fpFlp7Ux2pnxky0idDf/6psLMtrOGixuEx0oZeaDt09ytwsOEprG4xv6n6bqEIkEJV3xPyaEMJXKKzvd//ezttMLZNvTKt7jI50lthTOIoqfbBFhwF5z15dmSlThEmHSvaksYeSTsnLdudAf4z4t9QL6t9/gxSRNwY=}"
+    
