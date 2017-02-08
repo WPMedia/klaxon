@@ -13,6 +13,9 @@ environments:
           certificate: arn:aws:iam::766513428554:server-certificate/star.wpit.nile.works_4-3-2018
           healthcheck:
             path: "/healthcheck"
+            timeout: 10
+            healthy_threshold_count: 4
+            unhealthy_threshold_count: 4
     override:
       services:
         app:
@@ -52,6 +55,9 @@ environments:
           certificate: arn:aws:iam::766513428554:server-certificate/star.wpit.nile.works_4-3-2018
           healthcheck:
             path: "/healthcheck"
+            timeout: 10
+            healthy_threshold_count: 4
+            unhealthy_threshold_count: 4
     override:
       services:
         app:
