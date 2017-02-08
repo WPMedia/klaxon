@@ -24,6 +24,8 @@ module Klaxon
     # Docker ips change when using ALB setup
     config.web_console.whitelisted_ips = '10.128.0.0/16'
     
+    # vomit out the logs
+    config.log_level = :warn
     
     # Settings in config/environments/* take precedence over those specified here.
     # Application configuration should go into files in config/initializers
