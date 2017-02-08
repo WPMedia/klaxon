@@ -9,7 +9,7 @@ class MiddlewareHealthcheck
     if env['PATH_INFO'.freeze] == '/healthcheck'.freeze
       return OK_RESPONSE
     else
-      
+      @app.call(env)
     end
   end
 end
