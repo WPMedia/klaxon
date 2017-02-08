@@ -10,14 +10,8 @@ services:
     build: .
     ports:
       - "3000:3000"
-    links:
-      - "db:klaxondb"
-    depends_on:
-      - db
     restart: always
     entrypoint: /usr/src/app/createdb.sh
-    networks:
-      - default
     environment:
       DATABASE_URL: "${AQECAHhrXauv6cY0k3VFGkUx9UFWdvCyX3a6yFOMm4QCi5o1gwAAAJowgZcGCSqGSIb3DQEHBqCBiTCBhgIBADCBgAYJKoZIhvcNAQcBMB4GCWCGSAFlAwQBLjARBAxWXxaDcjVhr161yB0CARCAU8dbzxK+ru143KUf3U3tSProms4DGC5mh7ZDZYqGCbt2XWRXzA50OG5aORTuf1dfppVw0coUAgDDBAA1kiVhcJOQlr8caE0Ry4/p3ZhnWBLL3Zy/}"
       DATABASE_USERNAME: "${AQECAHhrXauv6cY0k3VFGkUx9UFWdvCyX3a6yFOMm4QCi5o1gwAAAGYwZAYJKoZIhvcNAQcGoFcwVQIBADBQBgkqhkiG9w0BBwEwHgYJYIZIAWUDBAEuMBEEDNAnlMPOqssTsJn26wIBEIAjHwJEVoTiYikBVG65+3n4/AVQHJ1QhzS0xBNbMlJM4L+rAAw=}"
