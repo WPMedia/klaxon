@@ -25,7 +25,7 @@ class AppSetting < ActiveRecord::Base
     if ENV['MAILER_FROM_ADDRESS'].present?
       ENV['MAILER_FROM_ADDRESS']
     else
-      'Klaxon <no-reply@newsklaxon.org>'
+      'Erik Reyna <erik.reyna@washpost.com>'
     end
   end
 
