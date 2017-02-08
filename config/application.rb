@@ -22,7 +22,7 @@ end
 module Klaxon
   class Application < Rails::Application
     # Docker ips change when using ALB setup
-    config.web_console.whitelisted_ips = '10.128.0.0/10.128.255.255'
+    config.web_console.whitelisted_ips = '10.128.0.0/16'
     
     
     # Settings in config/environments/* take precedence over those specified here.
