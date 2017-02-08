@@ -43,12 +43,13 @@ module Klaxon
     config.active_record.raise_in_transactional_callbacks = true
 
     config.static_cache_control = "public, max-age=31536000"
-
+    
+    config.middleware.insert_before "Rails::Rack::Logger", "MiddlewareHealthcheck"
+    
     config.middleware.use Rack::Cache,
         verbose:     true,
         metastore:   'file:./tmp/cache/rack/meta',
         entitystore: 'file:./tmp/cache/rack/body'
     
-    config.middleware.insert_after "Rails::Rack::Logger", "MiddlewareHealthcheck"
   end
 end
