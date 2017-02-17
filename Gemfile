@@ -29,8 +29,6 @@ gem 'kramdown'
 # only used for alerting SQS.
 gem 'aws-sdk', '~> 2.0'
 
-gem 'web-console', '~> 2.0'
-
 group :development, :test do
   gem 'byebug'
   gem 'rspec-rails', '~> 3.0'
@@ -47,5 +45,6 @@ end
 
 group :development do
   gem 'letter_opener'
+  gem 'web-console', '~> 2.0'
   gem 'spring'
 end
