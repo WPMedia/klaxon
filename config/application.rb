@@ -21,8 +21,10 @@ end
 
 module Klaxon
   class Application < Rails::Application
-    # Docker ips change when using ALB setup
-    config.web_console.whitelisted_ips = '10.128.0.0/16'
+    if ENV['RACK_ENV'] == 'development'
+      # Docker ips change when using ALB setup
+      config.web_console.whitelisted_ips = '10.128.0.0/16'
+    end
     
     # vomit out the logs
     config.log_level = :warn
