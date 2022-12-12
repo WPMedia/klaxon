@@ -22,7 +22,13 @@ Then, see if you have xcode installed (`xcode-select -version`), and if not, run
 xcode-select --install
 ```
 
-Next, we'll install rbenv to manage our ruby environment:
+If you already have `rbenv` and `ruby-build` install, let's make sure things are up-to-date:
+
+```
+brew update && brew upgrade ruby-build
+```
+
+Otherwise, we'll install `rbenv` and `ruby-build` to manage our ruby environment:
 
 ```
 brew install rbenv ruby-build
@@ -31,7 +37,6 @@ brew install rbenv ruby-build
 These next commands will put the proper (albeit aged) version of Ruby that Klaxon requires on your machine and make it available in this repo's directory.
 
 ```
-brew update && brew upgrade ruby-build
 rbenv install
 ```
 
