@@ -4,13 +4,19 @@ This guide is an adaptation of the original [Klaxon developing file](https://git
 
 We're assuming that git, homebrew, and [postgres](https://postgresapp.com/) are already installed on your machine.
 
-Start by cloning our fork of the Klaxon repo:
+Start by cloning our fork of the Klaxon repo. For HTTPS:
 
 ```
 git clone https://github.com/WPMedia/klaxon.git
 ```
 
-Then, we'll need to install xcode:
+For SSH:
+
+```
+git clone git@github.com:WPMedia/klaxon.git
+```
+
+Then, see if you have xcode installed (`xcode-select -version`), and if not, run:
 
 ```
 xcode-select --install
@@ -19,7 +25,7 @@ xcode-select --install
 Next, we'll install rbenv to manage our ruby environment:
 
 ```
-brew install rbenv --auto-update
+brew install rbenv ruby-build
 ```
 
 These next commands will put the proper (albeit aged) version of Ruby that Klaxon requires on your machine and make it available in this repo's directory.
@@ -29,13 +35,7 @@ brew update && brew upgrade ruby-build
 rbenv install
 ```
 
-Next, we'll want to make sure our ruby environment is properly initialized. Open your `~/.zshrc` (or `~/.bash` if that's your jam):
-
-```
-open ~/.zshrc
-```
-
-and add the following:
+Next, we'll want to make sure our ruby environment is properly initialized by editing our zsh or bash script. Many ways to do that, but if you're new to it, try `open ~/.zshrc` (or `open ~/.bash`) and add the following to the end of the file:
 
 ```
 # rbenv addition for Klaxon setup
@@ -77,12 +77,7 @@ Now, you should be about ready to get started. This command in the top folder of
 bin/dev
 ```
 
-If you get an error related to `puma`, try uninstalling and re-installing `foreman`:
-
-```
-gem uninstall foreman
-gem install foreman
-```
+If you get an error related to `puma` and/or trying to connect to an occupied port, it could be because your OS is using port 5000 for Airplay. Follow [these instructions](https://medium.com/pythonistas/port-5000-already-in-use-macos-monterey-issue-d86b02edd36c) to turn off Airplay and liberate that port.
 
 Now, you should be able to go to [localhost:5000](http://localhost:5000/) in your web browser and see Klaxon's welcome screen pop up. You'll want to manually add a webpage or two to watch at [watching/pages/new](http://localhost:5000/watching/pages/new). For development purposes, you'll probably want to pick a site that updates pretty regularly. We use [http://www.timeanddate.com/](http://www.timeanddate.com/).
 

@@ -15,6 +15,6 @@ on_worker_boot do
   end
 end
 
-port = Integer(ENV['PORT'] || 3000)
+port = 5000
 
 bind "tcp://0.0.0.0:#{port}"
