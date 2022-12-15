@@ -1,6 +1,6 @@
 # Setting up Klaxon in Docker locally for development
 
-These instructions assume you have Git, Homebrew, Postgres, and Docker installed locally.
+These instructions assume you have Git, Homebrew, Postgres, Ruby, and Docker installed locally.
 
 ## Setting up the environment
 
