@@ -5,8 +5,6 @@ services:
     image: postgres:14
     env_file:
       - .env
-    environment:
-      - POSTGRES_DB=klaxon
     ports:
       - "5432:5432"
     volumes:
@@ -17,11 +15,6 @@ services:
       - "3000:3000"
     env_file:
       - .env
-    # command: bundle exec puma -C config/puma.rb
     build: .
-      # context: .
-      # dockerfile: Dockerfile
-    # volumes:
-    #   - .:/code
     depends_on:
       - db
