@@ -16,5 +16,9 @@ on_worker_boot do
 end
 
 port = Integer(ENV['PORT'] || 3000)
+puts "PUMA PORT IS:"
+puts port
+puts "BROWSER IS:"
+puts ENV['BROWSER']
 
 bind "tcp://0.0.0.0:#{port}"

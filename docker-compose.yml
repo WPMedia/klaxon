@@ -1,13 +1,14 @@
-version: '2.2'
 volumes:
   postgres_data_local: {}
 services:
-  database:
-    image: postgres:9
+  db:
+    image: postgres:14
     env_file:
       - .env
+    environment:
+      - POSTGRES_DB=klaxon
     ports:
-      - "5000:5000"
+      - "5432:5432"
     volumes:
       - postgres_data_local:/var/lib/postgresql/data
 
@@ -17,10 +18,10 @@ services:
     env_file:
       - .env
     # command: bundle exec puma -C config/puma.rb
-    build:
-      context: .
-      dockerfile: Dockerfile
-    volumes:
-      - .:/code
+    build: .
+      # context: .
+      # dockerfile: Dockerfile
+    # volumes:
+    #   - .:/code
     depends_on:
-      - database
+      - db
