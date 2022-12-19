@@ -22,7 +22,7 @@ Then, see if you have xcode installed (`xcode-select -version`), and if not, run
 xcode-select --install
 ```
 
-If you already have `rbenv` and `ruby-build` install, let's make sure things are up-to-date:
+If you already have `rbenv` and `ruby-build` installed, let's make sure things are up-to-date:
 
 ```
 brew update && brew upgrade ruby-build
@@ -83,7 +83,7 @@ Now, you should be about ready to get started. This command in the top folder of
 bin/dev
 ```
 
-Now, you should be able to go to [localhost:5000](http://localhost:5000/) in your web browser and see Klaxon's welcome screen pop up. You'll want to manually add a webpage or two to watch at [watching/pages/new](http://localhost:5000/watching/pages/new). For development purposes, you'll probably want to pick a site that updates pretty regularly. We use [http://www.timeanddate.com/](http://www.timeanddate.com/).
+Now, you should be able to go to [localhost:3000](http://localhost:3000/) in your web browser and see Klaxon's welcome screen pop up. You'll want to manually add a webpage or two to watch at [watching/pages/new](http://localhost:3000/watching/pages/new). For development purposes, you'll probably want to pick a site that updates pretty regularly. We use [http://www.timeanddate.com/](http://www.timeanddate.com/).
 
 To get Klaxon to check for updates on the pages you're watching, in another terminal window, run this rake command.
 
