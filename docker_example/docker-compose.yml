@@ -1,19 +1,19 @@
 version: '2.2'
 
 services:
-  database:
+  db:
     image: "postgres:13.3-alpine"
     environment:
       - POSTGRES_USER=klaxon
       - POSTGRES_PASSWORD=secret-psql-password
       - POSTGRES_DB=klaxon
     volumes:
-      - ./database:/var/lib/postgresql
+      - ./db:/var/lib/postgresql
   app:
     links:
-      - database
+      - db
     depends_on:
-      - database
+      - db
     image: themarshallproject/klaxon
     env_file: 
       - env_local.list
