@@ -60,11 +60,12 @@ gem install bundler
 bundle install
 ```
 
-In order to be allowed to login to Klaxon once it's running on your machine, it'll need to know that your email address is. Create a file named `.env` and paste in these two items:
+In order to be allowed to login to Klaxon once it's running on your machine, it'll need to know that your email address is. Create a file named `.env` and paste in these items:
 
 ```
 ADMIN_EMAILS="my_awesome_email@gmail.com"
-HOST='localhost:5000'
+HOST='localhost:3000'
+PORT=3000
 ```
 
 Feel free to substitute in your email address. In development, Klaxon doesn't actually send emails locally, so a real address is not required.
@@ -81,8 +82,6 @@ Now, you should be about ready to get started. This command in the top folder of
 ```
 bin/dev
 ```
-
-If you get an error related to `puma` and/or trying to connect to an occupied port, it could be because your OS is using port 5000 for Airplay. Follow [these instructions](https://medium.com/pythonistas/port-5000-already-in-use-macos-monterey-issue-d86b02edd36c) to turn off Airplay and liberate that port.
 
 Now, you should be able to go to [localhost:5000](http://localhost:5000/) in your web browser and see Klaxon's welcome screen pop up. You'll want to manually add a webpage or two to watch at [watching/pages/new](http://localhost:5000/watching/pages/new). For development purposes, you'll probably want to pick a site that updates pretty regularly. We use [http://www.timeanddate.com/](http://www.timeanddate.com/).
 
