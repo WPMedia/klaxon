@@ -19,6 +19,7 @@ alias klaxon-psql-run="docker exec -tiu postgres \$(klaxon-psql-container)"
 # Drop into a psql shell on the running postgres container
 alias klaxon-psql="klaxon-psql-run psql"
 
+# Run database migrations
 alias klaxon-migrate="klaxon-rails db:migrate"
 
 # Drop and re-create the DB, not just flushing data from tables
