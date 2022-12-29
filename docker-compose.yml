@@ -4,7 +4,7 @@ services:
   db:
     image: postgres:14
     env_file:
-      - .env
+      - .env.local
     ports:
       - "5432:5432"
     volumes:
@@ -14,7 +14,7 @@ services:
     ports: 
       - "3000:3000"
     env_file:
-      - .env
+      - .env.local
     build: .
     depends_on:
       - db

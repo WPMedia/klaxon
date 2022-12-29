@@ -4,7 +4,7 @@ These instructions assume you have Git, Homebrew, Postgres, Ruby, and Docker ins
 
 ## Setting up the environment
 
-Let's start by setting up our environment. If you haven't already, create a `.env` file and add the following (populating with your own preferences, where applicable):
+Let's start by setting up our environment. If you haven't already, create a `.env.local` file and add the following (populating with your own preferences, where applicable):
 ```
 HOST='localhost:3000'
 PORT=3000
@@ -28,7 +28,7 @@ BROWSER=/dev/null
 
 ## Spinning up Docker
 
-Let's use our `docker-compose.yml` file to build our Docker image, create our empty Postgres database and spin up our app. Run:
+Let's use our `docker-compose.yml` file to build our Docker image, create our empty Postgres database and spin up our app. Notice that `docker-compose.yml` references the `.env.local` file we created above. Run:
 ```
 docker-compose up
 open http://localhost:3000
