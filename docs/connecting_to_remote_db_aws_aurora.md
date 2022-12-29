@@ -5,9 +5,9 @@ This documentation assumes several things:
 - You have already created an Aurora RDS cluster where the Klaxon database will be housed. That cluster should be configured in a way that is compatible with PostgreSQL 14. For our purposes at the Post, we used `database_engine_version: 14.4` and `instance_size: db.t4g.medium`. [Here is a guide](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.DBInstanceClass.html#Concepts.DBInstanceClass.Support) to help you select a compatible instance size. We deploy our AWS resources in infrastructure-specific repos, however resources [can also be created in the AWS console](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/Aurora.CreateInstance.html).
 - You have master credentials to access the Postgres database.
 
-## Create the database and appuser
+## Create the database and app user
 
-First, we need to create a database called `klaxon` on the new cluster and add a user role that will be used by our app. You will need the master credentials and the endpoint for the cluster, which can be [found in the AWS console](https://docs.aws.amazon.com/documentdb/latest/developerguide/db-cluster-endpoints-find.html). Open a psql shell on the remote cluster like:
+First, we need to create a database called `klaxon` on the new cluster and add a user role that will be used by our app. You will need the master credentials mentioned above, as well as the endpoint for the cluster, which can be [found in the AWS console](https://docs.aws.amazon.com/documentdb/latest/developerguide/db-cluster-endpoints-find.html). Open a psql shell on the remote cluster like:
 ```
 psql --host=<CLUSTER ENDPOINT> --username=<MASTER USERNAME> --password
 ```
@@ -91,7 +91,7 @@ Go back to the terminal window with the psql shell on the remote database. Enter
 \c klaxon
 \dt
 ```
-If uou should see (as of the time of this writing) 10 relations, then yay! Your database is configured and ready to be used by the app!
+If you see (as of the time of this writing) 10 relations, then yay! Your database is configured and ready to be used by the app!
 
 ## Sidenote on sharing the .env files with teammates
 
@@ -106,7 +106,7 @@ Then, we can edit our .gitignore to look something like:
 !.env.*.example # but don't ignore the template
 ```
 
-Then, as a bootstrapping step, folks can copy the contents of the example file into the real .env file and fill it out with all the :sparkles:secrets:sparkles: like:
+Then, as a bootstrapping step, folks can copy the contents of the example file into the real .env file before filling it out with all the :sparkles:secrets:sparkles: like:
 ```
 cp .env.dev.example .env.dev
 ```
