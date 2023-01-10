@@ -30,4 +30,5 @@ COPY . .
 
 EXPOSE 3001
 
+CMD ["bundle", "exec", "rails", "assets:precompile"]
 CMD ["bundle", "exec", "puma", "-C", "config/puma.rb"]
