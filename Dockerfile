@@ -28,6 +28,8 @@ RUN bundle install
 # Copy over the rest of the app
 COPY . .
 
+RUN bundle exec rake assets:precompile
+
 EXPOSE 3001
 
 CMD ["bundle", "exec", "puma", "-C", "config/puma.rb"]
