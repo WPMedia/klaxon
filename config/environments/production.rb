@@ -81,7 +81,7 @@ Rails.application.configure do
   # Do not dump schema after migrations.
   config.active_record.dump_schema_after_migration = false
 
-  # config.action_mailer.delivery_method = :postmark
+  config.action_mailer.delivery_method = :smtp
   # config.action_mailer.postmark_settings = { :api_token => ENV['POSTMARK_API_TOKEN'] }
 
   provider  = (ENV["SMTP_PROVIDER"] || "SENDGRID").to_s
