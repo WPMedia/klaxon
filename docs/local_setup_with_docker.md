@@ -4,27 +4,13 @@ These instructions assume you have Git, Homebrew, Postgres, Ruby, and Docker ins
 
 ## Setting up the environment
 
-Let's start by setting up our environment. If you haven't already, create a `.env.local` file and add the following (populating with your own preferences, where applicable):
-```
-HOST='localhost:3000'
-PORT=3000
+Let's start by setting up our environment. If you haven't already, create a `.env.local` file and populate it by running:
 
-# Database settings
-POSTGRES_USER=postgres
-POSTGRES_PASSWORD=postgres
-POSTGRES_DB=klaxon
-POSTGRES_HOST=db
-
-# App settings
-RACK_ENV=development
-RAILS_ENV=development
-# postgres URI pattern is postgresql://[user[:password]@][netloc][:port][/dbname][?param1=value1&...]
-DATABASE_URL="postgres://postgres:postgres@db:5432/klaxon"
-SECRET_KEY_BASE="secret_key_base"
-ADMIN_EMAILS="admin@news.org"
-LAUNCHY_DRY_RUN=true # stop letter_opener from attempting to open a browser
-BROWSER=/dev/null
 ```
+cp .env.local.example .env.local
+```
+
+Fill in the appropriate environment variable values as needed.
 
 ## Spinning up Docker
 

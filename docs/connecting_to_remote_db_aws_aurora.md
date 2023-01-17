@@ -1,6 +1,6 @@
 # Connecting to a remote Klaxon database in an AWS Aurora cluster
 
-This documentation assumes several things:
+This documentation is primarily for first-time setup to connect a locally running app to a remote Aurora cluster database. This doc assumes several things:
 - The app is running locally in a Docker container
 - You have already created an Aurora RDS cluster where the Klaxon database will be housed. That cluster should be configured in a way that is compatible with PostgreSQL 14. For our purposes at the Post, we used `database_engine_version: 14.4` and `instance_size: db.t4g.medium`. [Here is a guide](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.DBInstanceClass.html#Concepts.DBInstanceClass.Support) to help you select a compatible instance size. We deploy our AWS resources in infrastructure-specific repos, however resources [can also be created in the AWS console](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/Aurora.CreateInstance.html).
 - You have master credentials to access the Postgres database.
@@ -25,30 +25,19 @@ Leave this shell open, we'll come back to it at the end!
 
 Open a new terminal window for the following steps.
 
-Unlike the test, development, production environments (for automated tests, local development, and live production, respectively), we use local, dev, and prod. Regardless of what convention your team uses, we want to create an `.env` file that will contain the credentials for this remote db (and eventually, the remote app). Create that file with whatever name you choose. We use:
+Unlike the test, development, production environments (for automated tests, local development, and live production, respectively), we at the Washington Post use local, dev, and prod. Regardless of what convention your team uses, we want to create an `.env` file that will contain the credentials for this remote db (and eventually, the remote app). Create that file with whatever name you choose. We use:
 ```
 touch .env.dev
 ```
 
-To populate the new `.env.dev` file, you'll need credentials for your database. You'll also need the [endpoint for the cluster's writer instance](https://docs.aws.amazon.com/images/AmazonRDS/latest/AuroraUserGuide/images/AuroraMySQLConnect.png) and the port (also available in the console, under `Connectivity & security`). Populate the new `.env.dev` file like so:
+To populate the new `.env.dev` file, you'll need credentials for your database. You'll also need the [endpoint for the cluster's writer instance](https://docs.aws.amazon.com/images/AmazonRDS/latest/AuroraUserGuide/images/AuroraMySQLConnect.png) and the port (also available in the console, under `Connectivity & security`). Populate the new `.env.dev` file by running:
+
 ```
-ADMIN_EMAILS="dev_email@gmail.com"
-HOST='localhost:3000'
-PORT=3000
-
-# Database settings
-DATABASE_URL=postgresql://<APP USERNAME>:<PASSWORD>@<WRITER INSTANCE ENDPOINT>:<PORT>/<DATABASE NAME>
-
-# App settings
-RACK_ENV=development
-RAILS_ENV=development
-SECRET_KEY_BASE="secret_key_base"
-ADMIN_EMAILS="admin@news.org"
-LAUNCHY_DRY_RUN=true # stop letter_opener from attempting to open a browser
-BROWSER=/dev/null
+cp .env.dev.example .env.dev
 ```
 
 Now, we need our Docker container to know which environment to reference. Go to your `docker-compose.yml` file and edit the `env_file` value for both your database and the app to reference your new `.env.dev` file. It should look something like:
+
 ```
 volumes:
   postgres_data_local: {}
