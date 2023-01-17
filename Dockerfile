@@ -19,7 +19,8 @@ RUN gem update --system && \
     gem install bundler
 
 # Copy over the dependency files
-COPY Gemfile* .
+COPY Gemfile .
+COPY Gemfile.lock .
 
 # Install dependencies
 RUN bundle install
@@ -27,6 +28,7 @@ RUN bundle install
 # Copy over the rest of the app
 COPY . .
 
-EXPOSE 3000
+EXPOSE 3001
 
+CMD ["bundle", "exec", "rails", "assets:precompile"]
 CMD ["bundle", "exec", "puma", "-C", "config/puma.rb"]
