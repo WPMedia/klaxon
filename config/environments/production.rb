@@ -5,7 +5,7 @@ Rails.application.configure do
   Rails.application.routes.default_url_options[:host] = 'localhost:3001'
 
   # Code is not reloaded between requests.
-  config.cache_classes = true
+  config.cache_classes = true # to run migrations locally, change to false
 
   # Eager load code on boot. This eager loads most of Rails and
   # your application in memory, allowing both threaded web servers
@@ -86,7 +86,9 @@ Rails.application.configure do
 
   provider  = (ENV["SMTP_PROVIDER"] || "SENDGRID").to_s
   address   = ENV["#{provider}_ADDRESS"] || "smtp.sendgrid.net"
-  # if you use SES as your SMTP provider, then your username and password are actually your AWS credentials.
+  # if you use SES as your SMTP provider, then your username and password are actually your AWS user credentials.
+  # NOTE: AWS users are different from roles. If your team relies on roles to authenticate,
+  # you'll likely need to create a new user just to create SMTP credentials
   user_name = ENV["#{provider}_USERNAME" || (provider == "SES" ? (ENV["AWS_ACCESS_KEY_ID"] || ENV["ACCESS_KEY_ID"] ) : nil) ]  # for AWS SES, this is your access key id
   password  = ENV["#{provider}_PASSWORD" || (provider == "SES" ? (ENV["AWS_SECRET_ACCESS_KEY"] || ENV["SECRET_ACCESS_KEY"] ) : nil) ]  # for AWS SES, this is your secret access key
   domain    = ENV["#{provider}_DOMAIN"] || "heroku.com"
