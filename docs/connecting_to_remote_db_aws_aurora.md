@@ -1,6 +1,6 @@
 # Connecting to a remote Klaxon database in an AWS Aurora cluster
 
-This documentation is primarily for first-time setup to connect a locally running app to a remote Aurora cluster database. This doc assumes several things:
+This documentation is primarily for first-time setup to connect a locally running app to a remote Aurora cluster database. This is useful if you plan to deploy Klaxon to remote AWS resources and first want to establish that your app will have a working connection to its database. This doc assumes several things:
 - The app is running locally in a Docker container
 - You have already created an Aurora RDS cluster where the Klaxon database will be housed. That cluster should be configured in a way that is compatible with PostgreSQL 14. For our purposes at the Post, we used `database_engine_version: 14.4` and `instance_size: db.t4g.medium`. [Here is a guide](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.DBInstanceClass.html#Concepts.DBInstanceClass.Support) to help you select a compatible instance size. We deploy our AWS resources in infrastructure-specific repos, however resources [can also be created in the AWS console](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/Aurora.CreateInstance.html).
 - You have master credentials to access the Postgres database.
