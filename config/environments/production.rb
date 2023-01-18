@@ -1,6 +1,9 @@
 Rails.application.configure do
   # Settings specified here will take precedence over those in config/application.rb.
 
+  # overriding the default url option
+  Rails.application.routes.default_url_options[:host] = 'localhost:3001'
+
   # Code is not reloaded between requests.
   config.cache_classes = true
 
@@ -27,6 +30,7 @@ Rails.application.configure do
   # Compress JavaScripts and CSS.
   config.assets.js_compressor = :uglifier
   # config.assets.css_compressor = :sass
+  config.serve_static_files = true
 
   # Do not fall back to locating/compiling missing assets.
   config.assets.compile = (ENV.fetch('KLAXON_COMPILE_ASSETS', 'false').to_s.downcase == 'true')

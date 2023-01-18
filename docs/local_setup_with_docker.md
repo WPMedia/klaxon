@@ -17,7 +17,7 @@ Fill in the appropriate environment variable values as needed.
 Let's use our `docker-compose.yml` file to build our Docker image, create our empty Postgres database and spin up our app. Notice that `docker-compose.yml` references the `.env.local` file we created above. Run:
 ```
 docker-compose up
-open http://localhost:3000
+open http://localhost:3001
 ```
 
 You should see a `PendingMigrationError` in your browser. You can either click the `Run pending migrations` button below the error description, or run:
