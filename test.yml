@@ -1,0 +1,470 @@
+
+
+
+
+
+
+
+
+
+
+    
+
+    
+
+    
+
+    
+  
+
+
+
+Description: |
+    Klaxon enables reporters and editors to monitor scores of sites on the web for newsworthy changes.
+
+Metadata:
+    Stackjack: {'CanonicalTemplate': 'v1/cfn/shared/apps/ecs-v2/service.template.yml'}
+    
+
+Parameters:
+
+    ClusterName:
+        Description: the name of the cluster to host the service (should be something like 'trident-prod' not 'trident-prod-cluster')
+        Type: String
+        Default: "newsroom-dev"
+
+
+    ClusterRole:
+        Type: 'AWS::SSM::Parameter::Value<String>'
+        Default: /cluster/ecs/newsroom-dev/Role
+
+    ClusterRoleArn:
+        Type: 'AWS::SSM::Parameter::Value<String>'
+        Default: /cluster/ecs/newsroom-dev/RoleARN
+
+    ClusterHostSecurityGroup:
+        Type: 'AWS::SSM::Parameter::Value<String>'
+        Default: /cluster/ecs/newsroom-dev/HostSecurityGroup
+
+    ClusterServiceAutoScalingRole:
+        Type: 'AWS::SSM::Parameter::Value<String>'
+        Default: /cluster/ecs/newsroom-dev/ServiceAutoScalingRole
+
+    ClusterServiceAutoScalingRoleARN:
+        Type: 'AWS::SSM::Parameter::Value<String>'
+        Default: /cluster/ecs/newsroom-dev/ServiceAutoScalingRoleARN
+
+    ClusterServiceDnsApex:
+        Type: 'AWS::SSM::Parameter::Value<String>'
+        Default: /cluster/ecs/newsroom-dev/DnsApex
+
+    ClusterServiceDnsSuffix:
+        Type: 'AWS::SSM::Parameter::Value<String>'
+        Default: /cluster/ecs/newsroom-dev/DnsSuffix
+
+    ClusterServiceCertificate:
+        Type: 'AWS::SSM::Parameter::Value<String>'
+        Default: /cluster/ecs/newsroom-dev/Certificate
+
+
+
+Conditions:
+
+    cluster_name_valid: !Equals [ !Ref ClusterName, newsroom-dev ]
+    cluster_name_invalid: !Not [ !Condition cluster_name_valid ]
+    never: !Equals [ true, false ]
+
+
+Rules:
+    ClusterNameValid:
+        Assertions:
+          - Assert: !Not [ !Equals [ !Ref ClusterName, '' ] ]
+
+
+Mappings:
+    RegionShortCodes:
+        'us-east-1':          { 'Code': 'use1' }
+        'eu-central-1':       { 'Code': 'euc1' }
+        'ap-northeast-1':     { 'Code': 'apne1' }
+        'ap-southeast-1':     { 'Code': 'apse1' }
+
+Resources:
+
+    ClusterNameInvalid:
+        Condition: cluster_name_invalid
+        Type: Custom::Failure
+
+    LoadBalancerHttp:
+        DependsOn:
+          - LoadBalancerSecurityGroupHttp
+        Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+        Properties:
+            Type: application
+            SecurityGroups:
+              - !Ref LoadBalancerSecurityGroupHttp
+            Scheme: internal
+            Subnets: !Split
+              - ","
+              - !ImportValue "vpc-dev-PrivateSubnetIds-Group0-v2"
+
+    LoadBalancerSecurityGroupHttp:
+        
+        Metadata: {'Stackjack': {'AllowDestroy': true } }
+        Type: AWS::EC2::SecurityGroup
+        Properties:
+            VpcId: !ImportValue "vpc-dev-VpcId"
+            GroupDescription: Access to the load balancer that sits in front of ECS
+            SecurityGroupIngress:
+              - CidrIp: 10.0.0.0/8
+                IpProtocol: tcp
+                FromPort: 443
+                ToPort: 443
+              - CidrIp: 10.0.0.0/8
+                IpProtocol: tcp
+                FromPort: 80
+                ToPort: 80
+
+    ECSHostSecurityGroupIngressHttp:
+        
+        Metadata: {'Stackjack': {'AllowDestroy': true } }
+        Type: AWS::EC2::SecurityGroupIngress
+        Properties:
+            Description: Allow ALB to reach ECS for klaxon-dev/Http
+            SourceSecurityGroupId: !Ref LoadBalancerSecurityGroupHttp
+            IpProtocol: tcp
+            FromPort: 32768
+            ToPort: 65535
+            GroupId: !Sub "${ClusterHostSecurityGroup}"
+
+    LoadBalancerListenerHttp:
+        
+        Metadata: {'Stackjack': {'AllowDestroy': true } }
+        Type: AWS::ElasticLoadBalancingV2::Listener
+        DependsOn:
+          - LoadBalancerHttp
+          - DefaultTargetGroupHttp
+        Properties:
+            LoadBalancerArn: !Ref LoadBalancerHttp
+            Port: 443
+            Protocol: HTTPS
+            Certificates:
+              - CertificateArn: arn:aws:acm:us-east-1:912288704264:certificate/c1ff8358-9b24-4e68-9d38-28caf63c0fde
+            SslPolicy: ELBSecurityPolicy-TLS-1-2-Ext-2018-06
+            DefaultActions:
+              - Type: forward
+                TargetGroupArn: !Ref DefaultTargetGroupHttp
+
+    LoadBalancerListenerHttpRedirect:
+        
+        Metadata: {'Stackjack': {'AllowDestroy': true } }
+        Type: AWS::ElasticLoadBalancingV2::Listener
+        DependsOn:
+          - LoadBalancerHttp
+          - DefaultTargetGroupHttp
+        Properties:
+            LoadBalancerArn: !Ref LoadBalancerHttp
+            Port: 80
+            Protocol: HTTP
+            DefaultActions:
+              - Type: redirect
+                RedirectConfig:
+                    Host: "#{host}"
+                    Path: "/#{path}"
+                    Port: "443"
+                    Protocol: "HTTPS"
+                    Query: "#{query}"
+                    StatusCode: HTTP_301
+
+    DefaultTargetGroupHttp:
+        
+        Metadata: {'Stackjack': {'AllowDestroy': true } }
+        Type: AWS::ElasticLoadBalancingV2::TargetGroup
+        Properties:
+
+            VpcId: !ImportValue "vpc-dev-VpcId"
+            Port: 3001
+            Protocol: HTTP
+            HealthCheckPath: /healthcheck
+            Matcher: {'HttpCode': '200-299'}
+            HealthCheckIntervalSeconds: 10
+            HealthyThresholdCount: 2
+            UnhealthyThresholdCount: 6
+            HealthCheckTimeoutSeconds: 5
+
+    ECSHostSecurityGroupIngress:
+        
+        Metadata: {'Stackjack': {'AllowDestroy': true } }
+        Condition: never
+        Type: Custom::NoOp
+
+    LoadBalancer:
+        
+        Metadata: {'Stackjack': {'AllowDestroy': true } }
+        Condition: never
+        Type: Custom::NoOp
+
+    LoadBalancerSecurityGroup:
+        
+        Metadata: {'Stackjack': {'AllowDestroy': true } }
+        Condition: never
+        Type: Custom::NoOp
+
+    LoadBalancerListener:
+        
+        Metadata: {'Stackjack': {'AllowDestroy': true } }
+        Condition: never
+        Type: Custom::NoOp
+
+    ListenerRule:
+        
+        Metadata: {'Stackjack': {'AllowDestroy': true } }
+        Condition: never
+        Type: Custom::NoOp
+
+    TargetGroup:
+        
+        Metadata: {'Stackjack': {'AllowDestroy': true } }
+        Condition: never
+        Type: Custom::NoOp
+
+    DefaultTargetGroup:
+        
+        Metadata: {'Stackjack': {'AllowDestroy': true } }
+        Condition: never
+        Type: Custom::NoOp
+
+    ExecutionRole:
+        Type: AWS::IAM::Role
+        Properties:
+            Path: /
+            ManagedPolicyArns:
+              - arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy
+            AssumeRolePolicyDocument:
+                Statement:
+                  - Effect: Allow
+                    Action:
+                      - sts:AssumeRole
+                    Principal:
+                        Service:
+                          - ecs-tasks.amazonaws.com
+
+            Policies:
+            - PolicyName: !Sub svc-exec-role-klaxon-dev-b22d39d2-${AWS::Region}            
+              PolicyDocument:
+                  Version: '2012-10-17'
+                  Statement:
+                    - Effect: 'Allow'
+                      Action: 'STS:GetCallerIdentity'
+                      Resource: '*'
+                    - Effect: Allow
+                      Action:
+                        - "ssm:GetParameters"
+                        - "secretsmanager:GetSecretValue"
+                      Resource:
+                            - !Sub arn:aws:ssm:*:${AWS::AccountId}:parameter/*
+                            - !Sub arn:aws:secretsmanager:*:${AWS::AccountId}:secret:*
+
+    DNSRecordHttp:
+        
+        Metadata: {'Stackjack': {'AllowDestroy': true } }
+        Type: AWS::Route53::RecordSetGroup
+        Properties:
+            HostedZoneName: !Join [ "", [ news-engineering.aws.wapo.pub, "." ] ]
+            RecordSets:
+                - Name: klaxon-dev.news-engineering.aws.wapo.pub
+                  Type: A
+                  AliasTarget:
+                      HostedZoneId: !GetAtt LoadBalancerHttp.CanonicalHostedZoneID
+                      DNSName: !GetAtt LoadBalancerHttp.DNSName
+    DNSRecord:
+        
+        Metadata: {'Stackjack': {'AllowDestroy': true } }
+        Condition: never
+        Type: Custom::NoOp
+
+    SSMDnsAlias:
+        
+        Metadata: {'Stackjack': {'AllowDestroy': true } }
+        Condition: never
+        Type: Custom::NoOp
+
+
+
+
+    ScalableTarget:
+        Type: AWS::ApplicationAutoScaling::ScalableTarget
+        Properties:
+            MaxCapacity: 20
+            MinCapacity: 2
+            RoleARN: !Sub arn:aws:iam::${AWS::AccountId}:role/aws-service-role/ecs.application-autoscaling.amazonaws.com/AWSServiceRoleForApplicationAutoScaling_ECSService
+            ServiceNamespace: ecs
+            ScalableDimension: ecs:service:DesiredCount
+            ResourceId: !Join ['/', [ "service", "newsroom-dev", !GetAtt Service.Name ]]
+
+    
+    TargetTrackingScalingPolicyDefaultCPU:
+        Type: AWS::ApplicationAutoScaling::ScalingPolicy
+        Properties:
+            PolicyName: cpu-target-tracking-scaling-policy
+            PolicyType: TargetTrackingScaling
+            ScalingTargetId: !Ref ScalableTarget
+            TargetTrackingScalingPolicyConfiguration:
+                TargetValue: 50
+                ScaleInCooldown: 900
+                ScaleOutCooldown: 30
+                PredefinedMetricSpecification:
+                    PredefinedMetricType: ECSServiceAverageCPUUtilization
+    
+    
+    TargetTrackingScalingPolicyDefaultMem:
+        Type: AWS::ApplicationAutoScaling::ScalingPolicy
+        Properties:
+            PolicyName: mem-target-tracking-scaling-policy
+            PolicyType: TargetTrackingScaling
+            ScalingTargetId: !Ref ScalableTarget
+            TargetTrackingScalingPolicyConfiguration:
+                TargetValue: 75
+                ScaleInCooldown: 900
+                ScaleOutCooldown: 30
+                PredefinedMetricSpecification:
+                    PredefinedMetricType: ECSServiceAverageMemoryUtilization
+    
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+    Service:
+        Type: AWS::ECS::Service
+        DependsOn:
+          - TaskDefinition
+          - LoadBalancerListenerHttp
+
+        Properties:
+            Cluster: "newsroom-dev"
+            TaskDefinition: !Ref TaskDefinition
+            SchedulingStrategy: REPLICA
+            DesiredCount: 1
+            LoadBalancers:
+              - TargetGroupArn: !Ref DefaultTargetGroupHttp
+                ContainerName: "klaxon-dev"
+                ContainerPort: 3001
+
+    TaskDefinition:
+        Type: AWS::ECS::TaskDefinition
+        UpdateReplacePolicy: Retain
+        Properties:
+            Family: klaxon-dev
+            ExecutionRoleArn: !Ref ExecutionRole
+            NetworkMode: bridge
+
+            ContainerDefinitions:
+              
+              - Name: klaxon-dev
+                Essential: True
+                MemoryReservation: 512
+                Image: !Sub "${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/klaxon:dev-latest"
+
+                PortMappings:
+                  - Protocol: TCP
+                    ContainerPort: 3001
+
+                LogConfiguration:
+                    LogDriver: awslogs
+                    Options:
+                        awslogs-group: /service/klaxon/dev
+                        awslogs-region: !Ref AWS::Region
+                        awslogs-stream-prefix: dev
+
+                Environment:
+                  
+                  - Name: DATABASE_URL
+                    Value: 'postgresql://{{resolve:secretsmanager:/klaxon/aurora-postgresql-dev/app:SecretString:username}}:{{resolve:secretsmanager:/klaxon/aurora-postgresql-dev/app:SecretString:password}}@{{resolve:secretsmanager:/klaxon/aurora-postgresql-dev/app:SecretString:writer-host}}:5432/klaxon'
+                  
+                  - Name: ADMIN_EMAILS
+                    Value: 'erik.reyna@washpost.com, armand.emamdjomeh@washpost.com, katlyn.alo@washpost.com'
+                  
+                  - Name: PORT
+                    Value: '3001'
+                  
+                  - Name: RACK_ENV
+                    Value: 'production'
+                  
+                  - Name: RAILS_ENV
+                    Value: 'production'
+                  
+                  - Name: SECRET_KEY_BASE
+                    Value: '{{resolve:secretsmanager:/klaxon/prod/secret-key:SecretString:secret_key_base}}'
+                  
+                  - Name: KLAXON_COMPILE_ASSETS
+                    Value: 'True'
+                  
+                  - Name: SMTP_PROVIDER
+                    Value: 'SES'
+                  
+                  - Name: SES_ADDRESS
+                    Value: '{{resolve:secretsmanager:/klaxon/ses-prod/smtp-user-credentials:SecretString:address}}'
+                  
+                  - Name: SES_DOMAIN
+                    Value: '{{resolve:secretsmanager:/klaxon/ses-prod/smtp-user-credentials:SecretString:domain}}'
+                  
+                  - Name: SES_PORT
+                    Value: '{{resolve:secretsmanager:/klaxon/ses-prod/smtp-user-credentials:SecretString:port}}'
+                  
+                  - Name: MAILER_FROM_ADDRESS
+                    Value: '{{resolve:secretsmanager:/klaxon/ses-prod/smtp-user-credentials:SecretString:mailerFromAddress}}'
+                  
+                  - Name: SES_USERNAME
+                    Value: '{{resolve:secretsmanager:/klaxon/ses-prod/smtp-user-credentials:SecretString:username}}'
+                  
+                  - Name: SES_PASSWORD
+                    Value: '{{resolve:secretsmanager:/klaxon/ses-prod/smtp-user-credentials:SecretString:password}}'
+
+                ExtraHosts: [{'Hostname': 'statsd', 'IpAddress': '172.17.0.1'}]
+    CloudWatchLogsGroup:
+        Type: AWS::Logs::LogGroup
+        Properties:
+            LogGroupName: /service/klaxon/dev
+            RetentionInDays: 90
+
+Outputs:
+
+    Dummy:
+        Description: Placeholder if no other outputs defined
+        Value: None
+    
+    ServiceUrlHttp:
+        Description: The URL endpoint for the service
+        Value: !GetAtt LoadBalancerHttp.DNSName
+        Export:
+            Name: service-klaxon-dev-endpointHttp
+
+    LoadBalancerArnHttp:
+        Value: !Ref LoadBalancerHttp
+        Export:
+            Name: service-klaxon-dev-lbarnHttp
+
+
+    LoadBalancerCanonicalHostedZoneIdHttp:
+        Value: !GetAtt LoadBalancerHttp.CanonicalHostedZoneID
+        Export:
+            Name: service-klaxon-dev-canonicalhostedzoneidHttp
+
+    LoadBalancerListenerArnHttp:
+        Value: !Ref LoadBalancerListenerHttp
+        Export:
+            Name: service-klaxon-dev-listenerarnHttp
+
+    DefaultTargetGroupArnHttp:
+        Value: !Ref DefaultTargetGroupHttp
+        Export:
+            Name: service-klaxon-dev-tgarnHttp
