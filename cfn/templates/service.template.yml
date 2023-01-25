@@ -1164,6 +1164,8 @@ Resources:
             HealthyThresholdCount: {{ router.health_check.healthy_threshold_count }}
             UnhealthyThresholdCount: {{ router.health_check.unhealthy_threshold_count }}
             HealthCheckTimeoutSeconds: {{ router.health_check.timeout_seconds }}
+            HealthCheckProtocol: {{ router.health_check.protocol }}
+            HealthCheckPort: {{ router.health_check.port }}
           {%- endif %}
 
           {%- if router.target_group_attributes is mapping %}
@@ -1198,6 +1200,8 @@ Resources:
             HealthyThresholdCount: {{ router.health_check.healthy_threshold_count }}
             UnhealthyThresholdCount: {{ router.health_check.unhealthy_threshold_count }}
             HealthCheckTimeoutSeconds: {{ router.health_check.timeout_seconds }}
+            HealthCheckProtocol: {{ router.health_check.protocol }}
+            HealthCheckPort: {{ router.health_check.port }}
           {%- endif %}
 
           {%- if router.target_group_attributes is mapping %}
