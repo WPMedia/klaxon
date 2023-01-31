@@ -81,9 +81,8 @@ Rails.application.configure do
   config.action_mailer.delivery_method = :smtp
   # config.action_mailer.postmark_settings = { :api_token => ENV['POSTMARK_API_TOKEN'] }
 
-  # uncomment locally, using 3001 to avoid conflict with our other applications
-  # Rails.application.routes.default_url_options[:host] = 'localhost:3001'
-  Rails.application.routes.default_url_options[:host] = 'klaxon-dev.news-engineering.aws.wapo.pub'
+  # ensuring root url in emails is correct for deployed app and local development
+  Rails.application.routes.default_url_options[:host] = (ENV["APP_HOST"] || 'localhost:3001')
 
   provider  = (ENV["SMTP_PROVIDER"] || "SENDGRID").to_s
   address   = ENV["#{provider}_ADDRESS"] || "smtp.sendgrid.net"
