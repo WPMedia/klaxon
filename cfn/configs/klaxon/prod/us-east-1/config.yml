@@ -271,9 +271,8 @@ context:
       # protocol: string (default HTTP)
       # port: int (default 80)
 
-      public_protocol: http
+      public_protocol: HTTPS
       public_port: 443
-      http_to_https_redirect: true
       certificate: arn:aws:acm:us-east-1:912288704264:certificate/c1ff8358-9b24-4e68-9d38-28caf63c0fde
 
       # public_protocol: HTTP / HTTPS / TCP / UDP / TCP_UDP / TLS (default router.protocol)
@@ -329,7 +328,7 @@ context:
       #   this structure defines the parameters of a health check, the defaults are below
       #
       health_check:
-        path: "/healthcheck/"
+        path: "/healthcheck"
         interval_seconds: 10
         timeout_seconds: 5
         healthy_threshold_count: 2
