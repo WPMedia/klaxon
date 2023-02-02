@@ -27,7 +27,7 @@ _globals:
   - !_join &CLUSTER_NAME ["-", *CLUSTER_PREFIX, *ENVIRONMENT]
   - !_join &STACK_NAME ["-", *CLUSTER_NAME, *SERVICE_NAME]
 
-template: v1/cfn/shared/apps/ecs-v2/service.template.yml
+template: cfn/templates/service.template.yml
 stack_name: *STACK_NAME
 region: *REGION
 
@@ -327,12 +327,14 @@ context:
       #
       health_check:
         path: "/healthcheck"
-        interval_seconds: 10
-        timeout_seconds: 5
+        interval_seconds: 30
+        timeout_seconds: 10
         healthy_threshold_count: 2
         unhealthy_threshold_count: 6
         matcher:
-          HttpCode: "200-399" # accepts success or redirect
+          HttpCode: "200-299"
+        protocol: "HTTPS"
+        port: 443
 
       dns:
         zone_apex: news-engineering.aws.wapo.pub.
@@ -412,10 +414,11 @@ context:
 
     environment:
       DATABASE_URL: "postgresql://{{resolve:secretsmanager:/klaxon/aurora-postgresql-dev/app:SecretString:username}}:{{resolve:secretsmanager:/klaxon/aurora-postgresql-dev/app:SecretString:password}}@{{resolve:secretsmanager:/klaxon/aurora-postgresql-dev/app:SecretString:writer-host}}:5432/klaxon"
-      ADMIN_EMAILS: "erik.reyna@washpost.com, armand.emamdjomeh@washpost.com, katlyn.alo@washpost.com"
+      ADMIN_EMAILS: "admin@news.org"
       PORT: 3001
       RACK_ENV: production
       RAILS_ENV: production
+      HOST_URL: "klaxon-dev.news-engineering.aws.wapo.pub"
       SECRET_KEY_BASE: "{{resolve:secretsmanager:/klaxon/prod/secret-key:SecretString:secret_key_base}}"
       KLAXON_COMPILE_ASSETS: true
       SMTP_PROVIDER: SES
@@ -517,9 +520,9 @@ context:
     disable: false
 
     # default max is 12X the service.default_scale
-    max: 20
+    max: 12
     # default min is the default_scale
-    min: 2
+    min: 1
 
     #Additional configurable properties with their defaults:
     cpu_target: 50
