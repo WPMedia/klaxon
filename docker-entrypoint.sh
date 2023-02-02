@@ -9,5 +9,3 @@ bundle exec rails assets:precompile
 
 # Launch the main container command passed as arguments.
 exec "$@"
-
-
