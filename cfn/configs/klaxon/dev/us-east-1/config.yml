@@ -268,11 +268,10 @@ context:
       # protocol: string (default HTTP)
       # port: int (default 80)
 
-      public_protocol: http
+      public_protocol: HTTPS
       public_port: 443
-      http_to_https_redirect: true
       certificate: arn:aws:acm:us-east-1:912288704264:certificate/c1ff8358-9b24-4e68-9d38-28caf63c0fde
-
+      
       # public_protocol: HTTP / HTTPS / TCP / UDP / TCP_UDP / TLS (default router.protocol)
       #   this defines the Listener Protocol
       #   if HTTP or HTTPS then an ALB (Application Load Balancer) is created
@@ -327,8 +326,8 @@ context:
       #
       health_check:
         path: "/healthcheck"
-        interval_seconds: 10
-        timeout_seconds: 5
+        interval_seconds: 30
+        timeout_seconds: 10
         healthy_threshold_count: 2
         unhealthy_threshold_count: 6
         matcher:
@@ -412,19 +411,20 @@ context:
 
     environment:
       DATABASE_URL: "postgresql://{{resolve:secretsmanager:/klaxon/aurora-postgresql-dev/app:SecretString:username}}:{{resolve:secretsmanager:/klaxon/aurora-postgresql-dev/app:SecretString:password}}@{{resolve:secretsmanager:/klaxon/aurora-postgresql-dev/app:SecretString:writer-host}}:5432/klaxon"
-      ADMIN_EMAILS: "erik.reyna@washpost.com, armand.emamdjomeh@washpost.com, katlyn.alo@washpost.com"
+      ADMIN_EMAILS: "admin@news.org"
       PORT: 3001
       RACK_ENV: production
       RAILS_ENV: production
+      HOST_URL: "klaxon-dev.news-engineering.aws.wapo.pub"
       SECRET_KEY_BASE: "{{resolve:secretsmanager:/klaxon/prod/secret-key:SecretString:secret_key_base}}"
       KLAXON_COMPILE_ASSETS: true
       SMTP_PROVIDER: SES
-      SES_ADDRESS: "{{resolve:secretsmanager:/klaxon/ses-prod/smtp-user-credentials/secret-key:SecretString:address}}"
-      SES_DOMAIN: "{{resolve:secretsmanager:/klaxon/ses-prod/smtp-user-credentials/secret-key:SecretString:domain}}"
-      SES_PORT: "{{resolve:secretsmanager:/klaxon/ses-prod/smtp-user-credentials/secret-key:SecretString:port}}"
-      MAILER_FROM_ADDRESS: "{{resolve:secretsmanager:/klaxon/ses-prod/smtp-user-credentials/secret-key:SecretString:mailerFromAddress}}"
-      SES_USERNAME: "{{resolve:secretsmanager:/klaxon/ses-prod/smtp-user-credentials/secret-key:SecretString:username}}"
-      SES_PASSWORD: "{{resolve:secretsmanager:/klaxon/ses-prod/smtp-user-credentials/secret-key:SecretString:password}}"
+      SES_ADDRESS: "{{resolve:secretsmanager:/klaxon/ses-prod/smtp-user-credentials:SecretString:address}}"
+      SES_DOMAIN: "{{resolve:secretsmanager:/klaxon/ses-prod/smtp-user-credentials:SecretString:domain}}"
+      SES_PORT: "{{resolve:secretsmanager:/klaxon/ses-prod/smtp-user-credentials:SecretString:port}}"
+      MAILER_FROM_ADDRESS: "{{resolve:secretsmanager:/klaxon/ses-prod/smtp-user-credentials:SecretString:mailerFromAddress}}"
+      SES_USERNAME: "{{resolve:secretsmanager:/klaxon/ses-prod/smtp-user-credentials:SecretString:username}}"
+      SES_PASSWORD: "{{resolve:secretsmanager:/klaxon/ses-prod/smtp-user-credentials:SecretString:password}}"
 
     # environment: dictionary
     #   This allows environment values to be passed to the execution of the container at runtime
@@ -517,9 +517,9 @@ context:
     disable: false
 
     # default max is 12X the service.default_scale
-    max: 20
+    max: 12
     # default min is the default_scale
-    min: 2
+    min: 1
 
     #Additional configurable properties with their defaults:
     cpu_target: 50
