@@ -44,6 +44,9 @@ Rails.application.configure do
 
   # Force all access to the app over SSL, use Strict-Transport-Security, and use secure cookies.
   config.force_ssl = (ENV.fetch('KLAXON_FORCE_SSL', 'true').to_s.downcase == 'true')
+  # force_ssl above breaks the healthcheck, returning a 300 status instead of 200
+  # this should allow an ssl exception, per https://api.rubyonrails.org/v5.2.1/classes/ActionDispatch/SSL.html
+  config.ssl_options = { redirect: { exclude: -> request { request.path =~ /healthcheck/ } } }
 
   # Use the lowest log level to ensure availability of diagnostic information
   # when problems arise.
@@ -81,8 +84,8 @@ Rails.application.configure do
   config.action_mailer.delivery_method = :smtp
   # config.action_mailer.postmark_settings = { :api_token => ENV['POSTMARK_API_TOKEN'] }
 
-  # ensuring root url in emails is correct for deployed app and local development
-  Rails.application.routes.default_url_options[:host] = (ENV["APP_HOST"] || 'localhost:3001')
+  # changes the root url used in the email link, depending on environment
+  Rails.application.routes.default_url_options[:host] = (ENV["HOST_URL"] || "localhost:3001")
 
   provider  = (ENV["SMTP_PROVIDER"] || "SENDGRID").to_s
   address   = ENV["#{provider}_ADDRESS"] || "smtp.sendgrid.net"
