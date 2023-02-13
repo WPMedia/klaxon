@@ -1,6 +1,6 @@
 Rails.application.routes.draw do
 
-  # scope(:path => '/klaxon') do
+  scope(:path => '/klaxon') do
     # the rest of your routes go here
       Healthcheck.routes(self)
     root 'watching#feed'
@@ -68,7 +68,7 @@ Rails.application.routes.draw do
       get 'expired/:user_id' => 'sessions#expired_token', as: :expired_token
     end
     post '/logout' => 'sessions#destroy', as: :logout
-  # end
+  end
     # route is /healthcheck, see config/initializers/healthcheck.rb to configure
 
 end
