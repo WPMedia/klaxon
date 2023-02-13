@@ -17,15 +17,10 @@ class SessionsController < ApplicationController
 
   def token
     user = LoginToken.decode(token: params[:token])
-    puts("****************************************")
-    puts("Working with user:")
-    puts(user.inspect)
     if user.present?
       if user[:expired]
-        puts("user[:expired]")
         redirect_to expired_token_path(user[:user].id)
       else
-        puts("!user[:expired]")
         cookies.signed[:user_id] = { value: user.id, expires: 7.days.from_now, httponly: true, same_site: :none, secure: true }
         redirect_to root_path
       end
