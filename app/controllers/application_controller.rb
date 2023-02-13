@@ -4,7 +4,6 @@ class ApplicationController < ActionController::Base
   helper_method :authorize
   def authorize
     unless current_user.present?
-      puts(current_user)
       redirect_to login_path(return_to: request.original_url) and return false
     end
   end
@@ -39,10 +38,7 @@ class ApplicationController < ActionController::Base
     end
 
     user = User.find_by(id: cookies.signed[:user_id])
-    puts("application_controller user:")
-    puts(user)
     if user.present?
-      puts(user.present?)
       cookies.signed[:user_id] = { value: user.id, expires: 7.days.from_now, httponly: true, same_site: :none, secure: true }
       @current_user = user
     else
