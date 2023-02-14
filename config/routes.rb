@@ -1,8 +1,8 @@
 Rails.application.routes.draw do
 
   scope(:path => '/klaxon') do
-    # the rest of your routes go here
-      Healthcheck.routes(self)
+    # route is /healthcheck, see config/initializers/healthcheck.rb to configure
+    Healthcheck.routes(self)
     root 'watching#feed'
 
     scope 'api' do
@@ -69,6 +69,5 @@ Rails.application.routes.draw do
     end
     post '/logout' => 'sessions#destroy', as: :logout
   end
-    # route is /healthcheck, see config/initializers/healthcheck.rb to configure
 
 end
