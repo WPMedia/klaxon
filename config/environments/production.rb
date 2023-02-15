@@ -31,6 +31,8 @@ Rails.application.configure do
 
   # Do not fall back to locating/compiling missing assets.
   config.assets.compile = (ENV.fetch('KLAXON_COMPILE_ASSETS', 'false').to_s.downcase == 'true')
+  # in deployed app behind Trident, the assets will be compiled under /klaxon
+  config.assets.prefix = "/klaxon/assets"
 
   # Asset digests allow you to set far-future HTTP expiration dates on all assets,
   # yet still be able to expire them through the digest params.
