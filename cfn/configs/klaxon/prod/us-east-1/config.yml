@@ -55,7 +55,7 @@ context:
     # default_scale: int
     #   Define the number of service-instances that should be run within the cluster
     #   Note: coordinate this with your auto-scaling behavior in the scaling section
-    default_scale: 3
+    default_scale: 1 # temp while autoscaling is turned off
 
     # network_mode: string
     #   controls how Docker exposes the service to the network
