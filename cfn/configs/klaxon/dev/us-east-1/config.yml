@@ -325,7 +325,7 @@ context:
       #   this structure defines the parameters of a health check, the defaults are below
       #
       health_check:
-        path: "/healthcheck"
+        path: "/klaxon/healthcheck"
         interval_seconds: 30
         timeout_seconds: 10
         healthy_threshold_count: 2
@@ -416,7 +416,7 @@ context:
       APP_HOST: klaxon-dev.news-engineering.aws.wapo.pub.
       RACK_ENV: production
       RAILS_ENV: production
-      HOST_URL: "klaxon-dev.news-engineering.aws.wapo.pub"
+      HOST_URL: "sandbox.washpost.arcpublishing.com"
       SECRET_KEY_BASE: "{{resolve:secretsmanager:/klaxon/prod/secret-key:SecretString:secret_key_base}}"
       KLAXON_COMPILE_ASSETS: true
       SMTP_PROVIDER: SES
@@ -515,7 +515,7 @@ context:
   # `container.memory_reservation` will impact scaling behavior.
   scaling:
     # Autoscaling is enabled by default. use `true` to turn it off
-    disable: false
+    disable: true
 
     # default max is 12X the service.default_scale
     max: 12
