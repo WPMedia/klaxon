@@ -18,8 +18,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.server
-      # args:
-      #   - USE_CRON=true
+      args:
+        - USE_CRON=true
     depends_on:
       - db
   rake:
