@@ -46,5 +46,4 @@ EXPOSE 3001
 
 ENTRYPOINT ["./docker-entrypoint.sh"]
 
-
 CMD ["bundle", "exec", "puma", "-C", "config/puma.rb"]

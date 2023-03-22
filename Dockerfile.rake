@@ -29,4 +29,3 @@ RUN bundle install
 COPY . .
 
 CMD ["bundle", "exec", "rake", "check:all"]
-
