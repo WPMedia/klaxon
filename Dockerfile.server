@@ -1,7 +1,7 @@
 FROM public.ecr.aws/docker/library/ruby:2.7.7
 
-# Throw errors if Gemfile has been modified since Gemfile.lock
-RUN bundle config --global frozen 1
+ARG USE_CRON=false
+ENV USE_CRON=${USE_CRON}
 
 # Install cron
 RUN apt-get -y update && apt-get install -y cron
@@ -12,6 +12,8 @@ RUN touch /var/log/cron.log
 # it in your startup script, so the link is severed.
 RUN touch /etc/crontab /etc/cron.*/*
 
+# Throw errors if Gemfile has been modified since Gemfile.lock
+RUN bundle config --global frozen 1
 
 # Set up the app directory
 WORKDIR /usr/src/app
@@ -43,5 +45,6 @@ RUN ["chmod", "+x", "./docker-entrypoint.sh"]
 EXPOSE 3001
 
 ENTRYPOINT ["./docker-entrypoint.sh"]
+
 
 CMD ["bundle", "exec", "puma", "-C", "config/puma.rb"]

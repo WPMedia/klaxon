@@ -15,6 +15,18 @@ services:
       - "3001:3001"
     env_file:
       - .env.local
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile.server
+      # args:
+      #   - USE_CRON=true
+    depends_on:
+      - db
+  rake:
+    env_file:
+      - .env.local
+    build:
+      context: .
+      dockerfile: Dockerfile.rake
     depends_on:
       - db
