@@ -22,11 +22,3 @@ services:
         - USE_CRON=true
     depends_on:
       - db
-  rake:
-    env_file:
-      - .env.local
-    build:
-      context: .
-      dockerfile: Dockerfile.rake
-    depends_on:
-      - db
