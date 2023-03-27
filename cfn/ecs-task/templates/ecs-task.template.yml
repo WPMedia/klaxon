@@ -1,11 +1,13 @@
 # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ecs-taskdefinition.html
 ---
 AWSTemplateFormatVersion: 2010-09-09
+
 Description: CloudFormation template for an ECS task definition
+
 Parameters:
   Family:
     Type: String
-    Default: "{{ family }}"
+    Default: {{ family }}
   Cpu:
     Type: Number
     Default: 256
@@ -19,24 +21,12 @@ Parameters:
     Type: String
   TaskRoleArn:
     Type: String
-  ContainerName:
-    Type: String
-    Default: "{{ container_name }}"
   ImageName:
     Type: String
-    Default: "{{ image_name }}"
-  EnvVarName:
-    Type: String
-    Default: "{{ env_var_name }}"
-  EnvVarValue:
-    Type: String
-    Default: "{{ env_var_value }}"
-  Command:
-    Type: List<String>
-    Default: "{{ command }}"
+    Default: {{ image_name }}
   ScheduleExpression:
     Type: String
-    Default: "{{ schedule_expression }}" # A cron or rate expression
+    Default: {{ schedule_expression }} 
 Resources:
   TaskDefinition:
     Type: AWS::ECS::TaskDefinition
@@ -50,7 +40,3 @@ Resources:
       ContainerDefinitions:
         - Name: !Ref ContainerName
           Image: !Ref ImageName
-          Environment:
-            - Name: !Ref EnvVarName
-              Value: !Ref EnvVarValue
-          Command: !Ref Command
