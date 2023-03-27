@@ -1,0 +1,56 @@
+# https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ecs-taskdefinition.html
+---
+AWSTemplateFormatVersion: 2010-09-09
+Description: CloudFormation template for an ECS task definition
+Parameters:
+  Family:
+    Type: String
+    Default: "{{ family }}"
+  Cpu:
+    Type: Number
+    Default: 256
+  Memory:
+    Type: Number
+    Default: 512
+  NetworkMode:
+    Type: String
+    Default: bridge
+  ExecutionRoleArn:
+    Type: String
+  TaskRoleArn:
+    Type: String
+  ContainerName:
+    Type: String
+    Default: "{{ container_name }}"
+  ImageName:
+    Type: String
+    Default: "{{ image_name }}"
+  EnvVarName:
+    Type: String
+    Default: "{{ env_var_name }}"
+  EnvVarValue:
+    Type: String
+    Default: "{{ env_var_value }}"
+  Command:
+    Type: List<String>
+    Default: "{{ command }}"
+  ScheduleExpression:
+    Type: String
+    Default: "{{ schedule_expression }}" # A cron or rate expression
+Resources:
+  TaskDefinition:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      Family: !Ref Family
+      Cpu: !Ref Cpu
+      Memory: !Ref Memory
+      NetworkMode: !Ref NetworkMode
+      ExecutionRoleArn: !Ref ExecutionRoleArn
+      TaskRoleArn: !Ref TaskRoleArn
+      ContainerDefinitions:
+        - Name: !Ref ContainerName
+          Image: !Ref ImageName
+          Environment:
+            - Name: !Ref EnvVarName
+              Value: !Ref EnvVarValue
+          Command: !Ref Command
