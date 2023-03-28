@@ -1,0 +1,41 @@
+_globals:
+  # This section is used to accumulate the YAML Anchors for use in the config to DRY the configs
+  # This is done to reduce errors due to copying configs from one env/region to another
+
+  - &CLUSTER_PREFIX newsroom
+  - &DEBUG false
+
+  # Assuming a config file is named as follows
+  # e.g. cfn/config/MyFirstService/dev/us-east-1/config.yml
+
+  # The following two lines extract information from the stackjack config file being executed
+  - &FILEPATH "{{ config_file_name }}"
+  - !_split &FILENAME [!_split [*FILEPATH, "/", 0, -1], ".", 0, 0]
+
+  # Other information including service name, environment and region are further extracted from the file path
+  - !_split &SERVICE_NAME [*FILEPATH, "/", 0, 2]
+  - !_split &ENVIRONMENT [*FILEPATH, "/", 0, 3]
+  - !_split &REGION [*FILEPATH, "/", 0, 4]
+
+  # Or can be statically defined
+  #- &SERVICE_NAME           MyFirstService
+  #- &ENVIRONMENT            dev
+  #- &REGION                 us-east-1
+
+  # Lastly we assemble the ClusterName and StackName based on data collected above
+  #
+  - !_join &CLUSTER_NAME ["-", *CLUSTER_PREFIX, *ENVIRONMENT]
+  - !_join &STACK_NAME ["-", *CLUSTER_NAME, *SERVICE_NAME]
+
+template: cfn/ecs-task/templates/ecs-task.template.yml
+stack_name: *STACK_NAME
+region: *REGION
+
+context:
+  debug: *DEBUG
+  name: *SERVICE_NAME
+  environment: *ENVIRONMENT
+  cluster_name: *CLUSTER_NAME
+  family: email-dev-ecs
+  image_name: ${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/klaxon:dev-latest
+  schedule_expression: "*/10 * * * *"
