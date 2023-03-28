@@ -27,8 +27,8 @@ phases:
       - | 
         docker build \
           --cache-from $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$APP_NAME:$DEPLOYMENT_ENV-latest \
-          --build-arg USE_CRON=true \ 
-          -t $APP_NAME:$DEPLOYMENT_ENV-`cat commit_hash` \ 
+          --build-arg USE_CRON=true \
+          -t $APP_NAME:$DEPLOYMENT_ENV-`cat commit_hash` \
           -f $DOCKERFILE_SERVER_PATH .
 
   post_build:
