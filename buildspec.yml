@@ -7,6 +7,8 @@ env:
     # see cfn/configs/image/us-east-1/config.yml context.name
     APP_NAME: klaxon
     DOCKERFILE_SERVER_PATH: ./Dockerfile.server # For the klaxon server
+    DOCKERFILE_RAKE_PATH: ./Dockerfile.rake # For klaxon rake
+
 
 phases:
   install:
@@ -30,6 +32,11 @@ phases:
           -t $APP_NAME:$DEPLOYMENT_ENV-`cat commit_hash` \
           -f $DOCKERFILE_SERVER_PATH .
 
+        docker build \
+          --cache-from $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$APP_NAME:$DEPLOYMENT_ENV-latest \
+          -t $APP_NAME:$DEPLOYMENT_ENV-`cat commit_hash`-rake \
+          -f $DOCKERFILE_RAKE_PATH .
+
   post_build:
     commands:
       # For each valid region, need to push to ECR in each region
@@ -41,8 +48,13 @@ phases:
         IFS=","
         FULL_VERSIONS=`cat commit_hash`,"latest"
         for VERSION in $FULL_VERSIONS; do
+          # Push the Dockerfile.server image
           docker tag $APP_NAME:$DEPLOYMENT_ENV-`cat commit_hash` $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$APP_NAME:$DEPLOYMENT_ENV-$VERSION
           docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$APP_NAME:$DEPLOYMENT_ENV-$VERSION
+
+          # Push the Dockerfile.rake image
+          docker tag $APP_NAME:$DEPLOYMENT_ENV-`cat commit_hash`-rake $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$APP_NAME:$DEPLOYMENT_ENV-$VERSION-rake
+          docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$APP_NAME:$DEPLOYMENT_ENV-$VERSION-rake
         done
 
         IFS=","
