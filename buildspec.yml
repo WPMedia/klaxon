@@ -26,7 +26,7 @@ phases:
     commands: 
       - | 
         docker build \
-          --cache-from $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$APP_NAME:$DEPLOYMENT_ENV-latest \
+          $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$APP_NAME:$DEPLOYMENT_ENV-latest \
           -t $APP_NAME:$DEPLOYMENT_ENV-`cat commit_hash` \
           -f $DOCKERFILE_SERVER_PATH .
 
