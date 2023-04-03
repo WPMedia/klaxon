@@ -23,10 +23,11 @@ phases:
 
   build:
     on-failure: ABORT
-    commands:
+    commands: # Temporarily set USE_CRON=true while we debug ECS scheduled task
       - | 
         docker build \
           --cache-from $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$APP_NAME:$DEPLOYMENT_ENV-latest \
+          --build-arg USE_CRON=true \
           -t $APP_NAME:$DEPLOYMENT_ENV-`cat commit_hash` \
           -f $DOCKERFILE_SERVER_PATH .
 
