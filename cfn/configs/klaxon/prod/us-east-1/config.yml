@@ -31,9 +31,6 @@ template: v1/cfn/shared/apps/ecs-v2/service.template.yml
 stack_name: *STACK_NAME
 region: *REGION
 
-# include:
-#   - cfn/ecs-task/configs/prod/us-east-1/config.yml
-
 context:
   debug: *DEBUG
   name: *SERVICE_NAME
