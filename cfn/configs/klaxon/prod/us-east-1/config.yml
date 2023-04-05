@@ -432,6 +432,10 @@ context:
       MAILER_FROM_ADDRESS: "{{resolve:secretsmanager:/klaxon/ses-prod/smtp-user-credentials:SecretString:mailerFromAddress}}"
       SES_USERNAME: "{{resolve:secretsmanager:/klaxon/ses-prod/smtp-user-credentials:SecretString:username}}"
       SES_PASSWORD: "{{resolve:secretsmanager:/klaxon/ses-prod/smtp-user-credentials:SecretString:password}}"
+
+      # Datadog env configuration
+      DD_ENV: prod
+      DD_SERVICE: klaxon-server
   
     # environment: dictionary
     #   This allows environment values to be passed to the execution of the container at runtime
