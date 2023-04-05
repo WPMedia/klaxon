@@ -32,10 +32,10 @@ stack_name: *STACK_NAME
 region: *REGION
 
 context:
-  debug: *DEBUG
-  name: *SERVICE_NAME
-  environment: *ENVIRONMENT
-  cluster_name: *CLUSTER_NAME
+  debug: *DEBUG # false
+  name: *SERVICE_NAME # newsroom-dev-klaxon
+  environment: *ENVIRONMENT # dev
+  cluster_name: *CLUSTER_NAME # newsroom-dev
   family: email-dev-ecs
   image_name: ${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/klaxon:dev-latest
   schedule_expression: "*/10 * * * *"
