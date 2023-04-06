@@ -37,4 +37,6 @@ context:
   environment: *ENVIRONMENT # dev
   cluster_name: *CLUSTER_NAME # newsroom-dev
   family: email-dev-ecs
-  image_name: 912288704264.dkr.ecr.us-east-1.amazonaws.com/klaxon:dev-latest
+  image_name: !_join ["-", "klaxon", *ENVIRONMENT]
+  container_name: klaxon-dev
+  image: 912288704264.dkr.ecr.us-east-1.amazonaws.com/klaxon:dev-latest

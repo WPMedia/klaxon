@@ -19,13 +19,16 @@ Parameters:
     Default: bridge
   ExecutionRoleArn:
     Type: String
-  TaskRoleArn:
+  # TaskRoleArn:
+  #   Type: String
+  Image:
     Type: String
-  ImageName:
+    Default: {{ image }}
+  ContainerName:
     Type: String
-    Default: {{ image_name }}
+    Default: {{ container_name }}
 Resources:
-  TaskDefinition:
+  KlaxonScheduledTaskDefinition:
     Type: AWS::ECS::TaskDefinition
     Properties:
       Family: !Ref Family
@@ -33,60 +36,55 @@ Resources:
       Memory: !Ref Memory
       NetworkMode: !Ref NetworkMode
       ExecutionRoleArn: !Ref ExecutionRoleArn
-      TaskRoleArn: !Ref TaskRoleArn
+      # TaskRoleArn: !Ref TaskRoleArn
       ContainerDefinitions:
         - Name: !Ref ContainerName
-          Image: !Ref ImageName
+          Image: !Ref Image
+          
+  KlaxonTaskSchedule:
+    Type: AWS::Events::Rule
+    Properties:
+      # Description: String
+      # EventBusName: String # optional
+      # EventPattern: Json # optional
+      # Name: String
+      # RoleArn: String
+      # ScheduleExpression: String
+      # State: String
+      # Targets: 
+      #   - Target
+      Description: Klaxon ecs task scheduler
+      Name: klaxon-ecs-task-scheduler
+      RoleArn: arn:aws:iam::912288704264:role/ECSTaskExecutionRole
+      ScheduleExpression: cron(0/10 * * * ? *)
+      State: ENABLED
+      Targets:
+        - Arn: !Ref KlaxonScheduledTaskDefinition
+          Id: klaxon-ecs-task
 
-ECSTaskExecutionRole:
+  # Role that allows EventBridge to schedule an ECS task to run
+  # Used for Klaxon
+  ECSTaskExecutionRole:
     Type: AWS::IAM::Role
     Properties:
+      Description: A role for event to execute Klaxon ECS task
+      RoleName: schedule-ecs-task-role
       AssumeRolePolicyDocument:
         Statement:
           - Effect: Allow
             Principal:
-              Service: [ecs-tasks.amazonaws.com]
-            Action: ["sts:AssumeRole"]
-      Path: /
-      Policies:
-        - PolicyName: AmazonECSTaskExecutionRolePolicy
-          PolicyDocument:
-            Statement:
-              - Effect: Allow
-                Action:
-                  # ECS Tasks to download images from ECR
-                  - "ecr:GetAuthorizationToken"
-                  - "ecr:BatchCheckLayerAvailability"
-                  - "ecr:GetDownloadUrlForLayer"
-                  - "ecr:BatchGetImage"
-                  # ECS tasks to upload logs to CloudWatch
-                  - "logs:CreateLogStream"
-                  - "logs:PutLogEvents"
-                Resource: "*"
-
-  TaskSchedule:
-    Type: AWS::Events::Rule
-    Properties:
-      Description: SLA rule ass001
-      Name: ass001
-      ScheduleExpression: cron(0/5 * * * ? *)
-      State: ENABLED
-      Targets:
-        - Arn:
-            !GetAtt ECSCluster.Arn
-          Id: dump-data-ecs-task
-          RoleArn:
-            !GetAtt ECSTaskExecutionRole.Arn
-          EcsParameters:
-            TaskDefinitionArn:
-              !Ref Task
-            TaskCount: 1
-            LaunchType: FARGATE
-            PlatformVersion: LATEST
-            NetworkConfiguration:
-              AwsVpcConfiguration:
-                AssignPublicIp: ENABLED
-                SecurityGroups: 
-                  - sg-07db5ae6616a8c5fc
-                Subnets: 
-                  - subnet-031d0787ad492c1c4
+              Service: ecs-tasks.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceEventsRole
+      # I am unclear on whether I need these policies, going to try first without
+      # and uncomment if things don't go my way
+      # Policies:
+      #   - PolicyName: ScheduleECSTaskPolicy
+      #     PolicyDocument:
+      #       Statement:
+      #         - Effect: Allow
+      #           Action:
+      #              - iam:PassRole
+      #           Resource: "arn:aws:iam::912288704264:role/ECSTaskExecutionRole"
+          
