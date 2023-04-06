@@ -1,0 +1,92 @@
+# https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ecs-taskdefinition.html
+---
+AWSTemplateFormatVersion: 2010-09-09
+
+Description: CloudFormation template for an ECS task definition
+
+Parameters:
+  Family:
+    Type: String
+    Default: {{ family }}
+  Cpu:
+    Type: Number
+    Default: 256
+  Memory:
+    Type: Number
+    Default: 512
+  NetworkMode:
+    Type: String
+    Default: bridge
+  ExecutionRoleArn:
+    Type: String
+  TaskRoleArn:
+    Type: String
+  ImageName:
+    Type: String
+    Default: {{ image_name }}
+Resources:
+  TaskDefinition:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      Family: !Ref Family
+      Cpu: !Ref Cpu
+      Memory: !Ref Memory
+      NetworkMode: !Ref NetworkMode
+      ExecutionRoleArn: !Ref ExecutionRoleArn
+      TaskRoleArn: !Ref TaskRoleArn
+      ContainerDefinitions:
+        - Name: !Ref ContainerName
+          Image: !Ref ImageName
+
+ECSTaskExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: [ecs-tasks.amazonaws.com]
+            Action: ["sts:AssumeRole"]
+      Path: /
+      Policies:
+        - PolicyName: AmazonECSTaskExecutionRolePolicy
+          PolicyDocument:
+            Statement:
+              - Effect: Allow
+                Action:
+                  # ECS Tasks to download images from ECR
+                  - "ecr:GetAuthorizationToken"
+                  - "ecr:BatchCheckLayerAvailability"
+                  - "ecr:GetDownloadUrlForLayer"
+                  - "ecr:BatchGetImage"
+                  # ECS tasks to upload logs to CloudWatch
+                  - "logs:CreateLogStream"
+                  - "logs:PutLogEvents"
+                Resource: "*"
+
+  TaskSchedule:
+    Type: AWS::Events::Rule
+    Properties:
+      Description: SLA rule ass001
+      Name: ass001
+      ScheduleExpression: cron(0/5 * * * ? *)
+      State: ENABLED
+      Targets:
+        - Arn:
+            !GetAtt ECSCluster.Arn
+          Id: dump-data-ecs-task
+          RoleArn:
+            !GetAtt ECSTaskExecutionRole.Arn
+          EcsParameters:
+            TaskDefinitionArn:
+              !Ref Task
+            TaskCount: 1
+            LaunchType: FARGATE
+            PlatformVersion: LATEST
+            NetworkConfiguration:
+              AwsVpcConfiguration:
+                AssignPublicIp: ENABLED
+                SecurityGroups: 
+                  - sg-07db5ae6616a8c5fc
+                Subnets: 
+                  - subnet-031d0787ad492c1c4
