@@ -30,6 +30,8 @@ Parameters:
 Resources:
   KlaxonScheduledTaskDefinition:
     Type: AWS::ECS::TaskDefinition
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
     Properties:
       Family: !Ref Family
       Cpu: !Ref Cpu
@@ -40,6 +42,78 @@ Resources:
       ContainerDefinitions:
         - Name: !Ref ContainerName
           Image: !Ref Image
+          Essential: True
+          MemoryReservation: 512
+          PortMappings:
+            - Protocol: TCP
+              ContainerPort: 3001
+          LogConfiguration:
+              LogDriver: awslogs
+              Options:
+                  awslogs-group: /service/klaxon-scheduled-task/dev
+                  awslogs-region: !Ref AWS::Region
+                  awslogs-stream-prefix: dev
+          ExtraHosts: [{'Hostname': 'statsd', 'IpAddress': '172.17.0.1'}]
+        {%- if environment is mapping %}
+        {# blankline #}
+          Environment:
+          {%- for k, v in environment.items() %}
+            {# blankline #}
+            - Name: {{ k }}
+            {#-
+                Deal with Map/List data Types
+            #}
+            {%- if v is mapping %}
+            {#- This feels brittle, https://arcpublishing.atlassian.net/browse/ST-1240 #}
+            {%- set vl = v.keys() | list %}
+            {%- if vl is iterable and vl|length > 0 and ("Fn::" == vl[0][0:4] or "Ref" == vl[0]) %}
+              {#- Map is a translated !Fn object #}
+              Value: {{ v | tojson }}
+            {%- else %}
+              {#- Convert from map to json string, wrap in singleQuotes #}
+              Value: '{{ v | tojson }}'
+            {%- endif %}
+            {%- elif v is sequence and v is not string %}
+              {#- Convert from list to json string, wrap in singleQuotes #}
+              Value: '{{ v | tojson }}'
+            {#-
+                Deal with non-string types
+            #}
+            {%- elif v is number or v is sameas true or v is sameas false %}
+              {#- Item is Number or Boolean #}
+              Value: '{{ v }}'
+            {%- elif v is not string %}
+              {#- Unknown datatype, to not tamper #}
+              Value: {{ v }}
+            {#-
+                Process AWS CFN Specials
+            #}
+            {%- elif v[0] == '{' and 'resolve:' in v %}
+              {#- Inline CFN Dynamic Reference, wrap in single quotes #}
+              {#- https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/dynamic-references.html #}
+              Value: '{{ v }}'
+            {%- elif v[0] in '[{!' %}
+              {#- No Quotes for values which look like CFN/JSON #}
+              Value: {{ v }}
+            {%- elif '${AWS:' in v %}
+              {#- if ${AWS: in string then add CFN !Sub to allow inline substitutions #}
+              Value: !Sub '{{ v }}'
+            {#-
+                Process items with quotes
+            #}
+            {%- elif '"' in v or "'" in v %}
+              {#- No quotes for objects containing quotes #}
+              Value: {{ v }}
+            {#-
+                All others are singleQuoted
+            #}
+            {%- else %}
+              {#- Otherwise wrap in single quotes #}
+              Value: '{{ v }}'
+            {%- endif %}
+          {%- endfor %}
+        {%- endif %}
+      
           
   KlaxonTaskSchedule:
     Type: AWS::Events::Rule
