@@ -36,9 +36,8 @@ context:
   name: *SERVICE_NAME # newsroom-dev-klaxon
   cluster_name: *CLUSTER_NAME # newsroom-dev
   family: klaxon-scheduled-task-dev
-  image_name: !_join ["-", "klaxon", *ENVIRONMENT]
   container_name: klaxon-dev
-  image: 912288704264.dkr.ecr.us-east-1.amazonaws.com/klaxon:dev-latest
+  image: 912288704264.dkr.ecr.us-east-1.amazonaws.com/klaxon-rake:dev-latest
   environment:
     DATABASE_URL: "postgresql://{{resolve:secretsmanager:/klaxon/aurora-postgresql-dev/app:SecretString:username}}:{{resolve:secretsmanager:/klaxon/aurora-postgresql-dev/app:SecretString:password}}@{{resolve:secretsmanager:/klaxon/aurora-postgresql-dev/app:SecretString:writer-host}}:5432/klaxon"
     ADMIN_EMAILS: "admin@news.org"
