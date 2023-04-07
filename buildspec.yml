@@ -34,7 +34,7 @@ phases:
         docker build \
           --cache-from $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$APP_NAME-rake:$DEPLOYMENT_ENV-latest \
           -t $APP_NAME-rake:$DEPLOYMENT_ENV-`cat commit_hash` \
-          -f $DOCKERFILE_RAKE_PATH
+          -f $DOCKERFILE_RAKE_PATH .
 
 
   post_build:
