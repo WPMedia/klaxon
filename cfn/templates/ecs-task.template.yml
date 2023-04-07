@@ -134,7 +134,7 @@ Resources:
       State: ENABLED
       Targets:
         - Arn: !Ref KlaxonPageCheckTaskDefinition
-          Id: klaxon-ecs-task
+          Id: klaxon-page-check-ecs-task
 
   # Role that allows EventBridge to schedule an ECS task to run
   # Used for Klaxon

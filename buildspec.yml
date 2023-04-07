@@ -48,7 +48,7 @@ phases:
         IFS=","
         FULL_VERSIONS=`cat commit_hash`,"latest"
         for VERSION in $FULL_VERSIONS; do
-          # mainn app server image
+          # main app server image
           docker tag $APP_NAME:$DEPLOYMENT_ENV-`cat commit_hash` $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$APP_NAME:$DEPLOYMENT_ENV-$VERSION
           docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$APP_NAME:$DEPLOYMENT_ENV-$VERSION
           # ecs task that checks all pages image
