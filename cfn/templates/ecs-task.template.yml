@@ -28,7 +28,7 @@ Parameters:
     Type: String
     Default: {{ container_name }}
 Resources:
-  KlaxonScheduledTaskDefinition:
+  KlaxonPageCheckTaskDefinition:
     Type: AWS::ECS::TaskDefinition
     DeletionPolicy: Retain
     UpdateReplacePolicy: Retain
@@ -133,7 +133,7 @@ Resources:
       ScheduleExpression: cron(0/10 * * * ? *)
       State: ENABLED
       Targets:
-        - Arn: !Ref KlaxonScheduledTaskDefinition
+        - Arn: !Ref KlaxonPageCheckTaskDefinition
           Id: klaxon-ecs-task
 
   # Role that allows EventBridge to schedule an ECS task to run
