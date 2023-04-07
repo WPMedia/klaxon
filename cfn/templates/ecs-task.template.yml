@@ -1,0 +1,164 @@
+# https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ecs-taskdefinition.html
+---
+AWSTemplateFormatVersion: 2010-09-09
+
+Description: CloudFormation template for an ECS task definition
+
+Parameters:
+  Family:
+    Type: String
+    Default: {{ family }}
+  Cpu:
+    Type: Number
+    Default: 256
+  Memory:
+    Type: Number
+    Default: 512
+  NetworkMode:
+    Type: String
+    Default: bridge
+  ExecutionRoleArn:
+    Type: String
+  # TaskRoleArn:
+  #   Type: String
+  Image:
+    Type: String
+    Default: {{ image }}
+  ContainerName:
+    Type: String
+    Default: {{ container_name }}
+Resources:
+  KlaxonPageCheckTaskDefinition:
+    Type: AWS::ECS::TaskDefinition
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
+    Properties:
+      Family: !Ref Family
+      Cpu: !Ref Cpu
+      Memory: !Ref Memory
+      NetworkMode: !Ref NetworkMode
+      ExecutionRoleArn: !Ref ExecutionRoleArn
+      # TaskRoleArn: !Ref TaskRoleArn
+      ContainerDefinitions:
+        - Name: !Ref ContainerName
+          Image: !Ref Image
+          Essential: True
+          MemoryReservation: 512
+          PortMappings:
+            - Protocol: TCP
+              ContainerPort: 3001
+          LogConfiguration:
+              LogDriver: awslogs
+              Options:
+                  awslogs-group: /service/klaxon-scheduled-task/dev
+                  awslogs-region: !Ref AWS::Region
+                  awslogs-stream-prefix: dev
+          ExtraHosts: [{'Hostname': 'statsd', 'IpAddress': '172.17.0.1'}]
+        {%- if environment is mapping %}
+        {# blankline #}
+          Environment:
+          {%- for k, v in environment.items() %}
+            {# blankline #}
+            - Name: {{ k }}
+            {#-
+                Deal with Map/List data Types
+            #}
+            {%- if v is mapping %}
+            {#- This feels brittle, https://arcpublishing.atlassian.net/browse/ST-1240 #}
+            {%- set vl = v.keys() | list %}
+            {%- if vl is iterable and vl|length > 0 and ("Fn::" == vl[0][0:4] or "Ref" == vl[0]) %}
+              {#- Map is a translated !Fn object #}
+              Value: {{ v | tojson }}
+            {%- else %}
+              {#- Convert from map to json string, wrap in singleQuotes #}
+              Value: '{{ v | tojson }}'
+            {%- endif %}
+            {%- elif v is sequence and v is not string %}
+              {#- Convert from list to json string, wrap in singleQuotes #}
+              Value: '{{ v | tojson }}'
+            {#-
+                Deal with non-string types
+            #}
+            {%- elif v is number or v is sameas true or v is sameas false %}
+              {#- Item is Number or Boolean #}
+              Value: '{{ v }}'
+            {%- elif v is not string %}
+              {#- Unknown datatype, to not tamper #}
+              Value: {{ v }}
+            {#-
+                Process AWS CFN Specials
+            #}
+            {%- elif v[0] == '{' and 'resolve:' in v %}
+              {#- Inline CFN Dynamic Reference, wrap in single quotes #}
+              {#- https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/dynamic-references.html #}
+              Value: '{{ v }}'
+            {%- elif v[0] in '[{!' %}
+              {#- No Quotes for values which look like CFN/JSON #}
+              Value: {{ v }}
+            {%- elif '${AWS:' in v %}
+              {#- if ${AWS: in string then add CFN !Sub to allow inline substitutions #}
+              Value: !Sub '{{ v }}'
+            {#-
+                Process items with quotes
+            #}
+            {%- elif '"' in v or "'" in v %}
+              {#- No quotes for objects containing quotes #}
+              Value: {{ v }}
+            {#-
+                All others are singleQuoted
+            #}
+            {%- else %}
+              {#- Otherwise wrap in single quotes #}
+              Value: '{{ v }}'
+            {%- endif %}
+          {%- endfor %}
+        {%- endif %}
+      
+          
+  KlaxonTaskSchedule:
+    Type: AWS::Events::Rule
+    Properties:
+      # Description: String
+      # EventBusName: String # optional
+      # EventPattern: Json # optional
+      # Name: String
+      # RoleArn: String
+      # ScheduleExpression: String
+      # State: String
+      # Targets: 
+      #   - Target
+      Description: Klaxon ecs task scheduler
+      Name: klaxon-ecs-task-scheduler
+      RoleArn: !GetAtt ECSTaskExecutionRole.Arn
+      ScheduleExpression: cron(0/10 * * * ? *)
+      State: ENABLED
+      Targets:
+        - Arn: !Ref KlaxonPageCheckTaskDefinition
+          Id: klaxon-page-check-ecs-task
+
+  # Role that allows EventBridge to schedule an ECS task to run
+  # Used for Klaxon
+  ECSTaskExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      Description: A role for event to execute Klaxon ECS task
+      RoleName: schedule-ecs-task-role
+      AssumeRolePolicyDocument:
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: ecs-tasks.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceEventsRole
+      # I am unclear on whether I need these policies, going to try first without
+      # and uncomment if things don't go my way
+      # Policies:
+      #   - PolicyName: ScheduleECSTaskPolicy
+      #     PolicyDocument:
+      #       Statement:
+      #         - Effect: Allow
+      #           Action:
+      #              - iam:PassRole
+      #           Resource: "arn:aws:iam::912288704264:role/ECSTaskExecutionRole"
+          
