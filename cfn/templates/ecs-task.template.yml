@@ -128,6 +128,7 @@ Resources:
             Principal:
               Service:
                 - ecs-tasks.amazonaws.com
+                - events.amazonaws.com
       Policies:
       - PolicyName: klaxon-page-check-task-execution-role            
         PolicyDocument:
@@ -141,8 +142,8 @@ Resources:
                 - "ssm:GetParameters"
                 - "secretsmanager:GetSecretValue"
               Resource:
-                - !Sub arn:aws:ssm:*:${AWS::AccountId}:parameter/*
-                - !Sub arn:aws:secretsmanager:*:${AWS::AccountId}:secret:*
+                  - !Sub arn:aws:ssm:*:${AWS::AccountId}:parameter/*
+                  - !Sub arn:aws:secretsmanager:*:${AWS::AccountId}:secret:*
       
           
   KlaxonTaskSchedule:
@@ -177,7 +178,9 @@ Resources:
         Statement:
           - Effect: Allow
             Principal:
-              Service: ecs-tasks.amazonaws.com
+              Service: 
+                - ecs-tasks.amazonaws.com
+                - events.amazonaws.com
             Action: sts:AssumeRole
       ManagedPolicyArns:
         - arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceEventsRole
