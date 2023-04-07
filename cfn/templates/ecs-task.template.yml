@@ -142,8 +142,8 @@ Resources:
                 - "ssm:GetParameters"
                 - "secretsmanager:GetSecretValue"
               Resource:
-                  - !Sub arn:aws:ssm:*:${AWS::AccountId}:parameter/*
-                  - !Sub arn:aws:secretsmanager:*:${AWS::AccountId}:secret:*
+                - !Sub arn:aws:ssm:*:${AWS::AccountId}:parameter/*
+                - !Sub arn:aws:secretsmanager:*:${AWS::AccountId}:secret:*
       
           
   KlaxonTaskSchedule:
