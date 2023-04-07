@@ -17,8 +17,8 @@ Parameters:
   NetworkMode:
     Type: String
     Default: bridge
-  ExecutionRoleArn:
-    Type: String
+  # ExecutionRoleArn:
+  #   Type: String
   # TaskRoleArn:
   #   Type: String
   Image:
@@ -37,7 +37,7 @@ Resources:
       Cpu: !Ref Cpu
       Memory: !Ref Memory
       NetworkMode: !Ref NetworkMode
-      ExecutionRoleArn: !Ref ExecutionRoleArn
+      ExecutionRoleArn: !GetAtt TaskDefintionExecutionRole.Arn
       # TaskRoleArn: !Ref TaskRoleArn
       ContainerDefinitions:
         - Name: !Ref ContainerName
@@ -113,6 +113,36 @@ Resources:
             {%- endif %}
           {%- endfor %}
         {%- endif %}
+
+  TaskDefintionExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      Path: /
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy
+      AssumeRolePolicyDocument:
+        Statement:
+          - Effect: Allow
+            Action:
+              - sts:AssumeRole
+            Principal:
+              Service:
+                - ecs-tasks.amazonaws.com
+      Policies:
+      - PolicyName: klaxon-page-check-task-execution-role            
+        PolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Effect: 'Allow'
+              Action: 'STS:GetCallerIdentity'
+              Resource: '*'
+            - Effect: Allow
+              Action:
+                - "ssm:GetParameters"
+                - "secretsmanager:GetSecretValue"
+              Resource:
+                - !Sub arn:aws:ssm:*:${AWS::AccountId}:parameter/*
+                - !Sub arn:aws:secretsmanager:*:${AWS::AccountId}:secret:*
       
           
   KlaxonTaskSchedule:
