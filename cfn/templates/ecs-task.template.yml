@@ -129,7 +129,7 @@ Resources:
       #   - Target
       Description: Klaxon ecs task scheduler
       Name: klaxon-ecs-task-scheduler
-      RoleArn: arn:aws:iam::912288704264:role/ECSTaskExecutionRole
+      RoleArn: !GetAtt ECSTaskExecutionRole.Arn
       ScheduleExpression: cron(0/10 * * * ? *)
       State: ENABLED
       Targets:
