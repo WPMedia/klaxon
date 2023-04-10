@@ -52,7 +52,7 @@ Resources:
               Options:
                   awslogs-group: /service/klaxon/dev
                   awslogs-region: !Ref AWS::Region
-                  awslogs-stream-prefix: dev
+                  awslogs-stream-prefix: rake-page-check-dev
           ExtraHosts: [{'Hostname': 'statsd', 'IpAddress': '172.17.0.1'}]
         {%- if environment is mapping %}
         {# blankline #}
