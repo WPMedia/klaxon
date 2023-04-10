@@ -149,27 +149,21 @@ Resources:
   KlaxonTaskSchedule:
     Type: AWS::Events::Rule
     Properties:
-      # Description: String
-      # EventBusName: String # optional
-      # EventPattern: Json # optional
-      # Name: String
-      # RoleArn: String
-      # ScheduleExpression: String
-      # State: String
-      # Targets: 
-      #   - Target
       Description: Klaxon ecs task scheduler
       Name: klaxon-ecs-task-scheduler
-      RoleArn: !GetAtt ECSTaskExecutionRole.Arn
       ScheduleExpression: cron(0/10 * * * ? *)
       State: ENABLED
       Targets:
-        - Arn: !Ref KlaxonPageCheckTaskDefinition
+        - Arn: arn:aws:ecs:us-east-1:912288704264:cluster/newsroom-dev # cluster arn, hardcoding for now
           Id: klaxon-page-check-ecs-task
+          RoleArn: !GetAtt EC2ServiceEventsExecutionRole.Arn #ecs events role
+          EcsParameters:
+            TaskCount: 1
+            TaskDefinitionArn: !Ref KlaxonPageCheckTaskDefinition
 
   # Role that allows EventBridge to schedule an ECS task to run
   # Used for Klaxon
-  ECSTaskExecutionRole:
+  EC2ServiceEventsExecutionRole:
     Type: AWS::IAM::Role
     Properties:
       Description: A role for event to execute Klaxon ECS task
@@ -193,5 +187,5 @@ Resources:
       #         - Effect: Allow
       #           Action:
       #              - iam:PassRole
-      #           Resource: "arn:aws:iam::912288704264:role/ECSTaskExecutionRole"
+      #           Resource: "arn:aws:iam::912288704264:role/EC2ServiceEventsExecutionRole"
           
