@@ -50,7 +50,7 @@ Resources:
           LogConfiguration:
               LogDriver: awslogs
               Options:
-                  awslogs-group: /service/klaxon-scheduled-task/dev
+                  awslogs-group: /service/klaxon/dev
                   awslogs-region: !Ref AWS::Region
                   awslogs-stream-prefix: dev
           ExtraHosts: [{'Hostname': 'statsd', 'IpAddress': '172.17.0.1'}]
