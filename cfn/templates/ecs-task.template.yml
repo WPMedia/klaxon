@@ -1,47 +1,29 @@
 # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ecs-taskdefinition.html
+# This is a custom template with some components derived from proper StackJack templates
+# This template is not sufficiently modular to copy/paste into another project but could
+# be used as a guide for creating scheduled ECS tasks
 ---
 AWSTemplateFormatVersion: 2010-09-09
 
 Description: CloudFormation template for an ECS task definition
 
-Parameters:
-  Family:
-    Type: String
-    Default: {{ family }}
-  Cpu:
-    Type: Number
-    Default: 256
-  Memory:
-    Type: Number
-    Default: 512
-  NetworkMode:
-    Type: String
-    Default: bridge
-  # ExecutionRoleArn:
-  #   Type: String
-  # TaskRoleArn:
-  #   Type: String
-  Image:
-    Type: String
-    Default: {{ image }}
-  ContainerName:
-    Type: String
-    Default: {{ container_name }}
 Resources:
+
+  # mostly a replica of the main app task definitions
+  # this task will run rake check:all to check all watched pages
   KlaxonPageCheckTaskDefinition:
     Type: AWS::ECS::TaskDefinition
     DeletionPolicy: Retain
     UpdateReplacePolicy: Retain
     Properties:
-      Family: !Ref Family
-      Cpu: !Ref Cpu
-      Memory: !Ref Memory
-      NetworkMode: !Ref NetworkMode
+      Family: {{ family }}
+      Cpu: 256
+      Memory: 512
+      NetworkMode: bridge
       ExecutionRoleArn: !GetAtt TaskDefintionExecutionRole.Arn
-      # TaskRoleArn: !Ref TaskRoleArn
       ContainerDefinitions:
-        - Name: !Ref ContainerName
-          Image: !Ref Image
+        - Name: {{ container_name }}
+          Image: !Sub "{{ image }}"
           Essential: True
           MemoryReservation: 512
           PortMappings:
@@ -54,6 +36,8 @@ Resources:
                   awslogs-region: !Ref AWS::Region
                   awslogs-stream-prefix: rake-page-check-dev
           ExtraHosts: [{'Hostname': 'statsd', 'IpAddress': '172.17.0.1'}]
+        # This jinja block covers mapping over environment vars from config
+        # copied in from v1/cfn/shared/apps/ecs-v2/service.template.yml stackjack template
         {%- if environment is mapping %}
         {# blankline #}
           Environment:
@@ -114,6 +98,9 @@ Resources:
           {%- endfor %}
         {%- endif %}
 
+  # The role KlaxonPageCheckTaskDefinition will assume in order
+  # to execute the page checks (mostly needed for accessing secrets)
+  # This role was mostly copied from the main app server's task definition role
   TaskDefintionExecutionRole:
     Type: AWS::IAM::Role
     Properties:
@@ -145,24 +132,24 @@ Resources:
                 - !Sub arn:aws:ssm:*:${AWS::AccountId}:parameter/*
                 - !Sub arn:aws:secretsmanager:*:${AWS::AccountId}:secret:*
       
-          
+  # The resource that executes KlaxonPageCheckTaskDefinition's task on
+  # a schedule (every 10 min)        
   KlaxonTaskSchedule:
     Type: AWS::Events::Rule
     Properties:
       Description: Klaxon ecs task scheduler
       Name: klaxon-ecs-task-scheduler
-      ScheduleExpression: cron(0/10 * * * ? *)
+      ScheduleExpression: cron({{ schedule_expression }})
       State: ENABLED
       Targets:
-        - Arn: arn:aws:ecs:us-east-1:912288704264:cluster/newsroom-dev # cluster arn, hardcoding for now
+        - Arn: !Sub "arn:aws:ecs:${AWS::Region}:${AWS::AccountId}:cluster/newsroom-dev" # cluster arn, hardcoding for now
           Id: klaxon-page-check-ecs-task
           RoleArn: !GetAtt EC2ServiceEventsExecutionRole.Arn #ecs events role
           EcsParameters:
             TaskCount: 1
             TaskDefinitionArn: !Ref KlaxonPageCheckTaskDefinition
 
-  # Role that allows EventBridge to schedule an ECS task to run
-  # Used for Klaxon
+  # Role that allows KlaxonTaskSchedule to execute KlaxonPageCheckTaskDefinition's task
   EC2ServiceEventsExecutionRole:
     Type: AWS::IAM::Role
     Properties:
@@ -178,14 +165,4 @@ Resources:
             Action: sts:AssumeRole
       ManagedPolicyArns:
         - arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceEventsRole
-      # I am unclear on whether I need these policies, going to try first without
-      # and uncomment if things don't go my way
-      # Policies:
-      #   - PolicyName: ScheduleECSTaskPolicy
-      #     PolicyDocument:
-      #       Statement:
-      #         - Effect: Allow
-      #           Action:
-      #              - iam:PassRole
-      #           Resource: "arn:aws:iam::912288704264:role/EC2ServiceEventsExecutionRole"
           
