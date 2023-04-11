@@ -58,4 +58,5 @@ context:
 
     # Datadog env configuration
     DD_ENV: dev
-    DD_SERVICE: klaxon-server
+    DD_SERVICE: klaxon-rake
+    DD_AGENT_HOST: 172.17.0.1

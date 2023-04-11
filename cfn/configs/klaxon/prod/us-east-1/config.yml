@@ -431,9 +431,10 @@ context:
       SES_PASSWORD: "{{resolve:secretsmanager:/klaxon/ses-prod/smtp-user-credentials:SecretString:password}}"
 
       # Datadog env configuration
-      DD_ENV: prod
+      DD_ENV: dev
       DD_SERVICE: klaxon-server
-  
+      DD_AGENT_HOST: 172.17.0.1
+      
     # environment: dictionary
     #   This allows environment values to be passed to the execution of the container at runtime
 
