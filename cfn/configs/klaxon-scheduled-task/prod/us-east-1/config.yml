@@ -27,15 +27,36 @@ _globals:
   - !_join &CLUSTER_NAME ["-", *CLUSTER_PREFIX, *ENVIRONMENT]
   - !_join &STACK_NAME ["-", *CLUSTER_NAME, *SERVICE_NAME]
 
-template: cfn/ecs-task/templates/ecs-task.template.yml
-stack_name: *STACK_NAME
-region: *REGION
+template: cfn/templates/ecs-task.template.yml
+stack_name: *STACK_NAME # newsroom-prod-klaxon-scheduled-task
+region: *REGION # us-east-1
 
 context:
-  debug: *DEBUG
-  name: *SERVICE_NAME
-  environment: *ENVIRONMENT
-  cluster_name: *CLUSTER_NAME
-  family: email-prod-ecs
-  image_name: ${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/klaxon:prod-latest
-  schedule_expression: "*/10 * * * *"
+  debug: *DEBUG # false
+  name: *SERVICE_NAME # klaxon-scheduled-task
+  cluster_name: *CLUSTER_NAME # newsroom-prod
+  family: klaxon-scheduled-task-prod
+  container_name: klaxon-prod
+  image: ${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/klaxon-rake:prod-latest
+  schedule_expression: "0/10 * * * ? *"
+  environment:
+    DATABASE_URL: "{{resolve:secretsmanager:/klaxon/aurora-postgresql-prod/app:SecretString:database-url}}"
+    ADMIN_EMAILS: "admin@news.org"
+    PORT: 3001
+    APP_HOST: klaxon-prod.news-engineering.aws.wapo.pub.
+    RACK_ENV: production
+    RAILS_ENV: production
+    HOST_URL: "washpost.arcpublishing.com"
+    SECRET_KEY_BASE: "{{resolve:secretsmanager:/klaxon/prod/secret-key:SecretString:secret_key_base}}"
+    KLAXON_COMPILE_ASSETS: true
+    SMTP_PROVIDER: SES
+    SES_ADDRESS: "{{resolve:secretsmanager:/klaxon/ses-prod/smtp-user-credentials:SecretString:address}}"
+    SES_DOMAIN: "{{resolve:secretsmanager:/klaxon/ses-prod/smtp-user-credentials:SecretString:domain}}"
+    SES_PORT: "{{resolve:secretsmanager:/klaxon/ses-prod/smtp-user-credentials:SecretString:port}}"
+    MAILER_FROM_ADDRESS: "{{resolve:secretsmanager:/klaxon/ses-prod/smtp-user-credentials:SecretString:mailerFromAddress}}"
+    SES_USERNAME: "{{resolve:secretsmanager:/klaxon/ses-prod/smtp-user-credentials:SecretString:username}}"
+    SES_PASSWORD: "{{resolve:secretsmanager:/klaxon/ses-prod/smtp-user-credentials:SecretString:password}}"
+
+    # Datadog env configuration
+    DD_ENV: prod
+    DD_SERVICE: klaxon-server

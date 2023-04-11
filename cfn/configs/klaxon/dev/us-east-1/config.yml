@@ -410,7 +410,7 @@ context:
     raw_image_path: ${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/klaxon:dev-latest
 
     environment:
-      DATABASE_URL: "postgresql://{{resolve:secretsmanager:/klaxon/aurora-postgresql-dev/app:SecretString:username}}:{{resolve:secretsmanager:/klaxon/aurora-postgresql-dev/app:SecretString:password}}@{{resolve:secretsmanager:/klaxon/aurora-postgresql-dev/app:SecretString:writer-host}}:5432/klaxon"
+      DATABASE_URL: "{{resolve:secretsmanager:/klaxon/aurora-postgresql-dev/app:SecretString:database-url}}"
       ADMIN_EMAILS: "admin@news.org"
       PORT: 3001
       APP_HOST: klaxon-dev.news-engineering.aws.wapo.pub.
