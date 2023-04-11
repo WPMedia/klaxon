@@ -28,16 +28,16 @@ _globals:
   - !_join &STACK_NAME ["-", *CLUSTER_NAME, *SERVICE_NAME]
 
 template: cfn/templates/ecs-task.template.yml
-stack_name: *STACK_NAME # newsroom-dev-
-region: *REGION
+stack_name: *STACK_NAME # newsroom-dev-klaxon-scheduled-task
+region: *REGION # us-east-1
 
 context:
   debug: *DEBUG # false
-  name: *SERVICE_NAME # newsroom-dev-klaxon
+  name: *SERVICE_NAME # klaxon-scheduled-task
   cluster_name: *CLUSTER_NAME # newsroom-dev
   family: klaxon-scheduled-task-dev
   container_name: klaxon-dev
-  image: 912288704264.dkr.ecr.us-east-1.amazonaws.com/klaxon-rake:dev-latest
+  image: ${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/klaxon-rake:dev-latest
   environment:
     DATABASE_URL: "postgresql://{{resolve:secretsmanager:/klaxon/aurora-postgresql-dev/app:SecretString:username}}:{{resolve:secretsmanager:/klaxon/aurora-postgresql-dev/app:SecretString:password}}@{{resolve:secretsmanager:/klaxon/aurora-postgresql-dev/app:SecretString:writer-host}}:5432/klaxon"
     ADMIN_EMAILS: "admin@news.org"
