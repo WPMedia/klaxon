@@ -40,7 +40,7 @@ context:
   image: ${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/klaxon-rake:prod-latest
   schedule_expression: "0/10 * * * ? *"
   environment:
-    DATABASE_URL: "postgresql://{{resolve:secretsmanager:/klaxon/aurora-postgresql-prod/app:SecretString:username}}:{{resolve:secretsmanager:/klaxon/aurora-postgresql-prod/app:SecretString:password}}@{{resolve:secretsmanager:/klaxon/aurora-postgresql-prod/app:SecretString:writer-host}}:5432/klaxon"
+    DATABASE_URL: "{{resolve:secretsmanager:/klaxon/aurora-postgresql-prod/app:SecretString:database-url}}"
     ADMIN_EMAILS: "admin@news.org"
     PORT: 3001
     APP_HOST: klaxon-prod.news-engineering.aws.wapo.pub.
