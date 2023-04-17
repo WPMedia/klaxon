@@ -154,7 +154,7 @@ Resources:
     Type: AWS::IAM::Role
     Properties:
       Description: A role for event to execute Klaxon ECS task
-      RoleName: {{ family }}
+      RoleName: schedule-ecs-task-role
       AssumeRolePolicyDocument:
         Statement:
           - Effect: Allow
