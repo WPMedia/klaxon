@@ -39,6 +39,7 @@ context:
   container_name: klaxon-dev
   image: ${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/klaxon-rake:dev-latest
   schedule_expression: "0/10 * * * ? *"
+  events_role: schedule-ecs-task-role-dev
   environment:
     DATABASE_URL: "{{resolve:secretsmanager:/klaxon/aurora-postgresql-dev/app:SecretString:database-url}}"
     ADMIN_EMAILS: "admin@news.org"
