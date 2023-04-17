@@ -30,8 +30,6 @@ gem 'aws-sdk-sqs', '~> 1.52'
 
 gem 'rails-healthcheck'
 
-gem 'ddtrace', require: 'ddtrace/auto_instrument'
-
 group :development, :test do
   gem 'byebug'
   gem 'rspec-rails'
@@ -53,4 +51,3 @@ group :development do
   gem 'web-console', '~> 4.2'
   gem 'spring'
 end
-
