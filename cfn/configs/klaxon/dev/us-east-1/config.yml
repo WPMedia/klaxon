@@ -410,7 +410,7 @@ context:
     raw_image_path: ${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/klaxon:dev-latest
 
     environment:
-      DATABASE_URL: "{{resolve:secretsmanager:/klaxon/aurora-postgresql-dev/app:SecretString:database-url}}"
+      DATABASE_URL: "postgresql://{{resolve:secretsmanager:/klaxon/aurora-postgresql-dev/app:SecretString:username}}:{{resolve:secretsmanager:/klaxon/aurora-postgresql-dev/app:SecretString:password}}@{{resolve:secretsmanager:/klaxon/aurora-postgresql-dev/app:SecretString:writer-host}}:5432/klaxon"
       ADMIN_EMAILS: "admin@news.org"
       PORT: 3001
       APP_HOST: klaxon-dev.news-engineering.aws.wapo.pub.
@@ -426,11 +426,6 @@ context:
       MAILER_FROM_ADDRESS: "{{resolve:secretsmanager:/klaxon/ses-prod/smtp-user-credentials:SecretString:mailerFromAddress}}"
       SES_USERNAME: "{{resolve:secretsmanager:/klaxon/ses-prod/smtp-user-credentials:SecretString:username}}"
       SES_PASSWORD: "{{resolve:secretsmanager:/klaxon/ses-prod/smtp-user-credentials:SecretString:password}}"
-
-      # Datadog env configuration
-      DD_ENV: dev
-      DD_SERVICE: klaxon-server
-      DD_AGENT_HOST: 172.17.0.1
 
     # environment: dictionary
     #   This allows environment values to be passed to the execution of the container at runtime
