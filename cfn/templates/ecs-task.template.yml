@@ -32,9 +32,9 @@ Resources:
           LogConfiguration:
               LogDriver: awslogs
               Options:
-                  awslogs-group: /service/klaxon/dev
+                  awslogs-group: {{ awslogs_group }}
                   awslogs-region: !Ref AWS::Region
-                  awslogs-stream-prefix: rake-page-check-dev
+                  awslogs-stream-prefix: {{ awslogs_stream_prefix }}
           ExtraHosts: [{'Hostname': 'statsd', 'IpAddress': '172.17.0.1'}]
         # This jinja block covers mapping over environment vars from config
         # copied in from v1/cfn/shared/apps/ecs-v2/service.template.yml stackjack template
@@ -117,7 +117,7 @@ Resources:
                 - ecs-tasks.amazonaws.com
                 - events.amazonaws.com
       Policies:
-      - PolicyName: klaxon-page-check-task-execution-role            
+      - PolicyName: {{ task_execution_role }}            
         PolicyDocument:
           Version: '2012-10-17'
           Statement:
@@ -138,12 +138,12 @@ Resources:
     Type: AWS::Events::Rule
     Properties:
       Description: Klaxon ecs task scheduler
-      Name: klaxon-ecs-task-scheduler
+      Name: {{ klaxon_events_rule }}
       ScheduleExpression: cron({{ schedule_expression }})
       State: ENABLED
       Targets:
-        - Arn: !Sub "arn:aws:ecs:${AWS::Region}:${AWS::AccountId}:cluster/newsroom-dev" # cluster arn, hardcoding for now
-          Id: klaxon-page-check-ecs-task
+        - Arn: !Sub {{ cluster_arn }}
+          Id: {{ cluster_id }}
           RoleArn: !GetAtt EC2ServiceEventsExecutionRole.Arn #ecs events role
           EcsParameters:
             TaskCount: 1
@@ -154,7 +154,7 @@ Resources:
     Type: AWS::IAM::Role
     Properties:
       Description: A role for event to execute Klaxon ECS task
-      RoleName: {{ family }}
+      RoleName: {{ event_execution_role }}
       AssumeRolePolicyDocument:
         Statement:
           - Effect: Allow

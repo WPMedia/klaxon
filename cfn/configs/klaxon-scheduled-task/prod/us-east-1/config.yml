@@ -39,6 +39,13 @@ context:
   container_name: klaxon-prod
   image: ${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/klaxon-rake:prod-latest
   schedule_expression: "0/10 * * * ? *"
+  klaxon_events_rule: klaxon-events-rule-prod
+  awslogs_group: /service/klaxon/prod
+  awslogs_stream_prefix: rake-page-check-prod
+  task_execution_role: klaxon-page-check-task-execution-role-prod
+  cluster_arn: arn:aws:ecs:${AWS::Region}:${AWS::AccountId}:cluster/newsroom-prod
+  cluster_id: newsroom-prod
+  event_execution_role: klaxon-scheduled-event-execution-role-prod
   environment:
     DATABASE_URL: "{{resolve:secretsmanager:/klaxon/aurora-postgresql-prod/app:SecretString:database-url}}"
     ADMIN_EMAILS: "admin@news.org"
