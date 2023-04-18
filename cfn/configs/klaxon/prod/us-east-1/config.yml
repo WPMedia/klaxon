@@ -55,7 +55,7 @@ context:
     # default_scale: int
     #   Define the number of service-instances that should be run within the cluster
     #   Note: coordinate this with your auto-scaling behavior in the scaling section
-    default_scale: 1 # temp while autoscaling is turned off
+    default_scale: 2
 
     # network_mode: string
     #   controls how Docker exposes the service to the network
@@ -413,7 +413,7 @@ context:
 
 
     environment:
-      DATABASE_URL: "postgresql://{{resolve:secretsmanager:/klaxon/aurora-postgresql-prod/app:SecretString:username}}:{{resolve:secretsmanager:/klaxon/aurora-postgresql-prod/app:SecretString:password}}@{{resolve:secretsmanager:/klaxon/aurora-postgresql-prod/app:SecretString:writer-host}}:5432/klaxon"
+      DATABASE_URL: "{{resolve:secretsmanager:/klaxon/aurora-postgresql-prod/app:SecretString:database-url}}"
       ADMIN_EMAILS: "admin@news.org"
       PORT: 3001
       APP_HOST: klaxon-prod.news-engineering.aws.wapo.pub.
@@ -429,7 +429,12 @@ context:
       MAILER_FROM_ADDRESS: "{{resolve:secretsmanager:/klaxon/ses-prod/smtp-user-credentials:SecretString:mailerFromAddress}}"
       SES_USERNAME: "{{resolve:secretsmanager:/klaxon/ses-prod/smtp-user-credentials:SecretString:username}}"
       SES_PASSWORD: "{{resolve:secretsmanager:/klaxon/ses-prod/smtp-user-credentials:SecretString:password}}"
-  
+
+      # Datadog env configuration
+      DD_ENV: prod
+      DD_SERVICE: klaxon-server
+      DD_AGENT_HOST: 172.17.0.1
+
     # environment: dictionary
     #   This allows environment values to be passed to the execution of the container at runtime
 
