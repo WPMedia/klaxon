@@ -67,3 +67,4 @@ context:
     # Datadog env configuration
     DD_ENV: prod
     DD_SERVICE: klaxon-server
+    DD_AGENT_HOST: 172.17.0.1
