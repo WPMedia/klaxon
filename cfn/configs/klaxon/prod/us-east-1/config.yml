@@ -525,7 +525,7 @@ context:
   # `container.memory_reservation` will impact scaling behavior.
   scaling:
     # Autoscaling is enabled by default. use `true` to turn it off
-    disable: false
+    disable: true
     
     # default max is 12X the service.default_scale
     max: 20
