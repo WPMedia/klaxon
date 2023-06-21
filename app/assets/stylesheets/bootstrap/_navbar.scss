@@ -168,6 +168,8 @@
   height: $navbar-height;
   display: flex;
   flex-direction: row;
+  // prevents trimming of leading/trailing whitespace
+  white-space: break-spaces;
 
   > * {
     margin: 0 10 0 10;

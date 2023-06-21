@@ -1,7 +1,7 @@
 module LogoHelper
   def show_logo_text(path)
     if File.file?("app/assets/images/#{path}")
-      text = "<b>for</b>"
+      text = "<b> for </b>"
       text.html_safe
     end
   end
