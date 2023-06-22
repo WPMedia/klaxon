@@ -1,8 +1,8 @@
 # Be sure to restart your server when you modify this file.
 
-# Uncomment the lines below if logo SVG does not compile when deployed
-# Rails.application.config.assets.precompile += %w( '.svg' )  
-# Rails.application.config.assets.css_compressor = :sass
+# Precompiles SVG so that org logo will display in deployed app
+Rails.application.config.assets.precompile += %w( '.svg' )  
+Rails.application.config.assets.css_compressor = :sass
 
 # Version of your assets, change this if you want to expire all your assets.
 Rails.application.config.assets.version = '1.0'
