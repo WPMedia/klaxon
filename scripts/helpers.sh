@@ -10,7 +10,8 @@ alias klaxon-rails="klaxon-app rails"
 # Shorter way to run the Ruby rake command.
 alias klaxon-rake="klaxon-app rake"
 
-# TODO: add command to run tests
+# Run tests
+alias klaxon-test="klaxon-app bundle exec rspec"
 
 # Get the container id of the running postgres container
 # Note: This assumes you have exactly one container running with a database
@@ -48,18 +49,18 @@ alias klaxon-bootstrap="klaxon-reset-db && klaxon-migrate"
 # Help message for these commands. Excludes some that are meant to be used
 # only internally by this script
 alias klaxon-help="echo
-echo \"shootings dev commands\"
+echo \"klaxon dev commands\"
 echo \"======================\"
 echo
 echo \"klaxon-bootstrap         - drop database, run migrations and import data\"
 echo \"                              note: might be handy when switching branches\"
-echo \"klaxon-reset-db        - drop the database and create a new empty one\"
-echo \"klaxon-rails            - shortcut to run manage.py\"
-echo \"                              example: klaxon-rails db:migrate\"
+echo \"klaxon-check-all          - check all pages we are currently watching\"
+echo \"klaxon-create-admin      - add users for each comma-separated email in ADMIN_EMAILS\"
+echo \"klaxon-migrate          - run data migrations\"
 echo \"klaxon-psql              - drop into a psql shell\"
 echo \"klaxon-psql-container   - get the container ID of the postgres service\"
 echo \"klaxon-psql-run          - run a command on the running postgres container\"
-echo \"klaxon-migrate          - run data migrations\"
-echo \"klaxon-create-admin      - add users for each comma-separated email in ADMIN_EMAILS\"
-echo \"klaxon-check-all          - check all pages we are currently watching\"
+echo \"klaxon-reset-db        - drop the database and create a new empty one\"
+echo \"klaxon-rails            - shortcut to run manage.py\"
+echo \"                              example: klaxon-rails db:migrate\"
 "
