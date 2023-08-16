@@ -55,7 +55,7 @@ context:
     RAILS_ENV: production
     HOST_URL: "washpost.arcpublishing.com"
     SECRET_KEY_BASE: "{{resolve:secretsmanager:/klaxon/prod/secret-key:SecretString:secret_key_base}}"
-    KLAXON_COMPILE_ASSETS: true
+    KLAXON_COMPILE_ASSETS: false
     SMTP_PROVIDER: SES
     SES_ADDRESS: "{{resolve:secretsmanager:/klaxon/ses-prod/smtp-user-credentials:SecretString:address}}"
     SES_DOMAIN: "{{resolve:secretsmanager:/klaxon/ses-prod/smtp-user-credentials:SecretString:domain}}"
