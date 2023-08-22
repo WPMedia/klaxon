@@ -58,6 +58,8 @@ class UsersController < ApplicationController
       return false
     end
 
+    now = Time.now.to_i
+    Rails.logger.info "#{now} User, email #{current_user.email} and id #{current_user.id}, deleted a user with email #{@user.email} and id #{@user.id}."
     @user.subscriptions.destroy_all
     @user.destroy
     redirect_to users_url, notice: 'User was successfully deleted.'
