@@ -51,6 +51,7 @@ class PagesController < ApplicationController
 
     if @page.save
       redirect_to pages_url, notice: 'Page was successfully created.'
+      Rails.logger.info "#{@page.created_at} User, email #{current_user.email} and id #{current_user.id}, created a page called #{@page.name} with id #{@page.id}."
     else
       render :new
     end
