@@ -30,6 +30,7 @@ class UsersController < ApplicationController
     if @user.save
       UserMailer.welcome_email(user: @user, invited_by: current_user).deliver_later
 
+      Rails.logger.info "#{@user.created_at} User, email #{current_user.email} and id #{current_user.id}, created another user with email #{@user.email} with id #{@user.id}."
       redirect_to users_url, notice: 'User was successfully created.'
     else
       render :new
