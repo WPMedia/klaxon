@@ -30,7 +30,7 @@ class UsersController < ApplicationController
     if @user.save
       UserMailer.welcome_email(user: @user, invited_by: current_user).deliver_later
 
-      Rails.logger.info "#{@user.created_at} User, email #{current_user.email} and id #{current_user.id}, created another user with email #{@user.email} with id #{@user.id}."
+      Rails.logger.info "#{@user.created_at} User, email #{current_user.email} and ID #{current_user.id}, created another user with email #{@user.email} with ID #{@user.id}."
       redirect_to users_url, notice: 'User was successfully created.'
     else
       render :new
@@ -45,6 +45,8 @@ class UsersController < ApplicationController
     end
 
     if @user.update(user_params)
+      now = Time.now
+      Rails.logger.info "#{now} User with email #{current_user.email} and ID #{current_user.id} has updated a user with email #{@user.email} with ID #{@user.id}:\n#{user_params}"
       redirect_to users_url, notice: 'User was successfully updated.'
     else
       render :edit
@@ -58,8 +60,8 @@ class UsersController < ApplicationController
       return false
     end
 
-    now = Time.now.to_i
-    Rails.logger.info "#{now} User, email #{current_user.email} and id #{current_user.id}, deleted a user with email #{@user.email} and id #{@user.id}."
+    now = Time.now
+    Rails.logger.info "#{now} User, email #{current_user.email} and ID #{current_user.id}, deleted a user with email #{@user.email} and ID #{@user.id}."
     @user.subscriptions.destroy_all
     @user.destroy
     redirect_to users_url, notice: 'User was successfully deleted.'
