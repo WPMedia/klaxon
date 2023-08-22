@@ -68,6 +68,8 @@ class PagesController < ApplicationController
 
   # DELETE /pages/1
   def destroy
+    now = Time.now.to_i
+    Rails.logger.info "#{now} User, email #{current_user.email} and id #{current_user.id}, deleted a page called #{@page.name} with id #{@page.id}."
     @page.destroy
     redirect_to pages_url, notice: 'Page was successfully destroyed.'
   end
