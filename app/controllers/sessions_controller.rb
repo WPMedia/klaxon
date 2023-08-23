@@ -10,7 +10,7 @@ class SessionsController < ApplicationController
       redirect_to unknown_user_path and return false
     end
 
-    now = Time.now
+    now = Time.zone.now
     Rails.logger.info "#{now} login email requested for #{params[:session][:email].downcase}"
     UserMailer.login_email(user: user).deliver_later
     # Allow the login page to display in the bookmarklet iframe
@@ -23,7 +23,7 @@ class SessionsController < ApplicationController
       if user[:expired]
         redirect_to expired_token_path(user[:user].id)
       else
-        now = Time.now
+        now = Time.zone.now
         Rails.logger.info "#{now} user with email #{user.email} and ID #{user.id} has successfully authenticated."
         cookies.signed[:user_id] = { value: user.id, expires: 7.days.from_now, httponly: true, same_site: :none, secure: true }
         redirect_to root_path

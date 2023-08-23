@@ -60,7 +60,7 @@ class PagesController < ApplicationController
   # PATCH/PUT /pages/1
   def update
     if @page.update(page_params)
-      now = Time.now
+      now = Time.zone.now
       Rails.logger.info "#{now} user with email #{current_user.email} and ID #{current_user.id} has updated a page called \"#{@page.name}\" with ID #{@page.id}."
       redirect_to pages_url, notice: 'Page was successfully updated.'
     else
@@ -70,7 +70,7 @@ class PagesController < ApplicationController
 
   # DELETE /pages/1
   def destroy
-    now = Time.now
+    now = Time.zone.now
     Rails.logger.info "#{now} user, email #{current_user.email} and ID #{current_user.id}, deleted a page called \"#{@page.name}\" with ID #{@page.id}."
     @page.destroy
     redirect_to pages_url, notice: 'Page was successfully destroyed.'

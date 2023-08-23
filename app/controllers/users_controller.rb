@@ -45,7 +45,7 @@ class UsersController < ApplicationController
     end
 
     if @user.update(user_params)
-      now = Time.now
+      now = Time.zone.now
       Rails.logger.info "#{now} user with email #{current_user.email} and ID #{current_user.id} has updated a user with email #{@user.email} with ID #{@user.id}."
       redirect_to users_url, notice: 'User was successfully updated.'
     else
@@ -60,7 +60,7 @@ class UsersController < ApplicationController
       return false
     end
 
-    now = Time.now
+    now = Time.zone.now
     Rails.logger.info "#{now} user, email #{current_user.email} and ID #{current_user.id}, deleted a user with email #{@user.email} and ID #{@user.id}."
     @user.subscriptions.destroy_all
     @user.destroy
