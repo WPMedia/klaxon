@@ -51,7 +51,7 @@ class PagesController < ApplicationController
 
     if @page.save
       redirect_to pages_url, notice: 'Page was successfully created.'
-      Rails.logger.info "#{@page.created_at} User, email #{current_user.email} and ID #{current_user.id}, created a page \"#{@page.name}\" with ID #{@page.id}."
+      Rails.logger.info "#{@page.created_at} user, email #{current_user.email} and ID #{current_user.id}, created a page \"#{@page.name}\" with ID #{@page.id}."
     else
       render :new
     end
@@ -61,7 +61,7 @@ class PagesController < ApplicationController
   def update
     if @page.update(page_params)
       now = Time.now
-      Rails.logger.info "#{now} User with email #{current_user.email} and ID #{current_user.id} has updated a page called #{@page.name} with ID #{@page.id}:\n#{page_params}"
+      Rails.logger.info "#{now} user with email #{current_user.email} and ID #{current_user.id} has updated a page called \"#{@page.name}\" with ID #{@page.id}."
       redirect_to pages_url, notice: 'Page was successfully updated.'
     else
       render :edit
@@ -71,7 +71,7 @@ class PagesController < ApplicationController
   # DELETE /pages/1
   def destroy
     now = Time.now
-    Rails.logger.info "#{now} User, email #{current_user.email} and ID #{current_user.id}, deleted a page called #{@page.name} with ID #{@page.id}."
+    Rails.logger.info "#{now} user, email #{current_user.email} and ID #{current_user.id}, deleted a page called \"#{@page.name}\" with ID #{@page.id}."
     @page.destroy
     redirect_to pages_url, notice: 'Page was successfully destroyed.'
   end
