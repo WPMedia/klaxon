@@ -59,7 +59,7 @@ Rails.application.configure do
 
   # Use a different logger for distributed setups.
   # config.logger = ActiveSupport::TaggedLogging.new(SyslogLogger.new)
-  
+
   # Logs work locally but won't appear in the ECS console or CloudWatch without this:
   config.logger = Logger.new(STDOUT)
 
