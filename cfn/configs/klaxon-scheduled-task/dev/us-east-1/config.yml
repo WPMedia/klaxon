@@ -53,9 +53,9 @@ context:
     APP_HOST: klaxon-dev.news-engineering.aws.wapo.pub.
     RACK_ENV: production
     RAILS_ENV: production
-    HOST_URL: "sandbox.washpost.arcpublishing.com"
+    HOST_URL: "klaxon-dev.news-engineering.aws.wapo.pub"
     SECRET_KEY_BASE: "{{resolve:secretsmanager:/klaxon/prod/secret-key:SecretString:secret_key_base}}"
-    KLAXON_COMPILE_ASSETS: true
+    KLAXON_COMPILE_ASSETS: false
     SMTP_PROVIDER: SES
     SES_ADDRESS: "{{resolve:secretsmanager:/klaxon/ses-prod/smtp-user-credentials:SecretString:address}}"
     SES_DOMAIN: "{{resolve:secretsmanager:/klaxon/ses-prod/smtp-user-credentials:SecretString:domain}}"
