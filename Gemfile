@@ -32,6 +32,8 @@ gem 'rails-healthcheck'
 
 gem 'ddtrace', require: 'ddtrace/auto_instrument'
 
+gem 'miss_hannigan'
+
 group :development, :test do
   gem 'byebug'
   gem 'rspec-rails'
