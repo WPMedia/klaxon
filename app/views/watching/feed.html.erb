@@ -3,17 +3,18 @@
 <%= render partial: 'layouts/bookmarklet' %>
 
 <% else %>
-
+<!-- commenting out most of this section because changes with no snapshots are breaking the page -->
 <div class="klax-section klax-topper">
   <div class="container">
-    <div class="row">
+  <div class="row">
       <div class="col-md-12">
         <h1>Feed</h1>
       </div>
     </div>
     <div class="row">
       <div class="col-md-6">
-      <p class="lead">Below is a quick look at everything Klaxon is monitoring for your organization, even items you don’t subscribe to. Each line represents a change to an item, known as a “snapshot.” </p>
+      <!-- <p class="lead">Below is a quick look at everything Klaxon is monitoring for your organization, even items you don’t subscribe to. Each line represents a change to an item, known as a “snapshot.” </p> -->
+      <p>The feed is temporarily down, but the rest of Klaxon should be up and running! Drop a message in the #klaxon Slack channel if you have any questions or concerns.</p>
       </div>
       <div class="col-md-3">
 
@@ -21,7 +22,7 @@
     </div>
   </div><!-- /.container -->
 </div>
-<div class="klax-section">
+<!-- <div class="klax-section">
   <div class="container">
     <div class="row">
         <div class="col-md-9">
@@ -39,6 +40,6 @@
 
     </div>
   </div>
-</div>
+</div> -->
 
 <% end %>
