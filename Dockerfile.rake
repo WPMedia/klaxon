@@ -3,6 +3,9 @@ FROM public.ecr.aws/docker/library/ruby:2.7.7
 # Throw errors if Gemfile has been modified since Gemfile.lock
 RUN bundle config --global frozen 1
 
+# Updating packages
+RUN apt update && apt upgrade -yqq
+
 # Set up the app directory
 WORKDIR /usr/src/app
 
