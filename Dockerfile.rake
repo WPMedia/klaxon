@@ -17,9 +17,8 @@ ENV LANG=C.UTF-8 \
 # Store Bundler settings in the project's root
 ENV BUNDLE_APP_CONFIG=.bundle
 
-# Upgrade RubyGems and install the latest Bundler version
-RUN gem update --system && \
-    gem install bundler
+# Install specific bundler version
+RUN gem install bundler -v 2.4.22
 
 # Copy over the dependency files
 COPY Gemfile .
