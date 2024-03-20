@@ -3,8 +3,8 @@ FROM public.ecr.aws/docker/library/ruby:2.7.7
 ARG USE_CRON=false
 ENV USE_CRON=${USE_CRON}
 
-# Install cron
-RUN apt-get -y update && apt-get install -y cron
+# Update packages and install cron
+RUN apt -y update && apt upgrade -yqq && apt install -y cron
 # Create the log file to be able to store logs
 RUN touch /var/log/cron.log
 # Cron (at least in Debian) does not execute crontabs with more than 1 hardlink, see bug 647193.
@@ -26,9 +26,8 @@ ENV LANG=C.UTF-8 \
 # Store Bundler settings in the project's root
 ENV BUNDLE_APP_CONFIG=.bundle
 
-# Upgrade RubyGems and install the latest Bundler version
-RUN gem update --system && \
-    gem install bundler
+# Install specific bundler version
+RUN gem install bundler -v 2.4.22
 
 # Copy over the dependency files
 COPY Gemfile .
