@@ -4,16 +4,10 @@ This guide is an adaptation of the original [Klaxon developing file](https://git
 
 We're assuming that git, homebrew, and [postgres](https://postgresapp.com/) are already installed on your machine.
 
-Start by cloning our fork of the Klaxon repo. For HTTPS:
+Start by cloning our fork of the Klaxon repo. 
 
 ```
-git clone https://github.com/WPMedia/klaxon.git
-```
-
-For SSH:
-
-```
-git clone git@github.com:WPMedia/klaxon.git
+git clone git@github.com:washingtonpost/klaxon.git
 ```
 
 Then, see if you have xcode installed (`xcode-select -version`), and if not, run:
